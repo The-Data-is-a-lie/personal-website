@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daniel Grkinich</title>
+<meta name="description" content="Daniel Grkinich — data &amp; automation analyst in healthcare economics. Builder of Pathfinder 1e and FoundryVTT tooling.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 91,28 91,72 50,95 9,72 9,28' fill='%2312162A' stroke='%23E7B24C' stroke-width='6'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Daniel Grkinich">
+<meta property="og:description" content="Data &amp; automation analyst by day, builder of TTRPG tooling by night.">
+<style>
+  /* baseline reset — mirrors what the preview shell provided */
+  html { background: #0A0C16; }
+  body { margin: 0; padding: 0; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; color: #ECE6D6; }
+  img { max-width: 100%; }
+</style>
+</head>
+<body>
+<style>
+  /* ============================================================
+     Daniel Grkinich — personal site (preview, "Arcane")
+     Night-default, multi-theme (tokens derived from [bg,accent,ink]
+     seeded from the Pathfinder-Character-Sheet palettes) + a d20
+     with a full-screen throw, crits, confetti, and a nat-20 unlock.
+     Fonts are system stacks (mono reliable on Windows).
+     ============================================================ */
+
+  :root {
+    --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --serif:"Palatino Linotype","Book Antiqua","Iowan Old Style",Georgia,serif;
+    --mono:"Cascadia Code","Cascadia Mono",Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
+    --bg:#0A0C16; --surface:#12162A; --surface-2:#171D36;
+    --ink:#ECE6D6; --muted:#A2A8C2; --faint:#6E7492; --line:#242B4C;
+    --accent:#E7B24C; --accent-ink:#0A0C16; --field-op:1;
+    --maxw:1080px; --radius:5px; --ease:cubic-bezier(.22,.61,.36,1);
+    --hero-size:clamp(3rem,10vw,7.4rem);
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden; transition:background-color .5s var(--ease), color .5s var(--ease); }
+  ::selection{ background:var(--accent); color:var(--accent-ink); }
+  a{ color:inherit; text-decoration:none; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 clamp(20px,5vw,56px); }
+  .eyebrow{ font-family:var(--mono); font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--faint); }
+  .tnum{ font-variant-numeric:tabular-nums; }
+
+  /* ===== control bar ===== */
+  .bar{ position:sticky; top:0; z-index:60; display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:12px clamp(20px,5vw,56px); background:color-mix(in srgb,var(--bg) 78%, transparent);
+    backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .bar .sig{ font-family:var(--mono); font-size:.8rem; color:var(--muted); }
+  .bar .sig b{ color:var(--ink); font-weight:600; }
+  @media (max-width:560px){ .bar .sig{ display:none; } }
+  .theme-wrap{ position:relative; }
+  .theme-btn{ display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:.76rem; letter-spacing:.03em;
+    padding:8px 14px; border:1px solid var(--line); border-radius:999px; background:var(--surface); color:var(--ink); cursor:pointer;
+    transition:border-color .2s, transform .25s var(--ease); }
+  .theme-btn:hover{ border-color:var(--accent); transform:translateY(-1px); }
+  .theme-btn .sw{ width:13px; height:13px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent); }
+  .theme-btn svg{ width:13px; height:13px; opacity:.7; }
+  .menu{ position:absolute; right:0; top:calc(100% + 8px); width:270px; max-height:min(70vh,460px); overflow-y:auto;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:8px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.55); opacity:0; transform:translateY(-6px) scale(.98); pointer-events:none;
+    transition:opacity .2s, transform .2s var(--ease); }
+  .menu.open{ opacity:1; transform:none; pointer-events:auto; }
+  .menu .mh{ font-family:var(--mono); font-size:.64rem; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); padding:8px 10px 6px; }
+  .theme-opt{ display:flex; align-items:center; gap:11px; width:100%; text-align:left; border:0; background:transparent; cursor:pointer;
+    padding:9px 10px; border-radius:8px; color:var(--ink); transition:background .15s; }
+  .theme-opt:hover{ background:var(--surface-2); }
+  .theme-opt .dots{ display:inline-flex; flex:0 0 auto; }
+  .theme-opt .dot{ width:14px; height:14px; border-radius:50%; margin-left:-5px; border:1.5px solid var(--surface); }
+  .theme-opt .dot:first-child{ margin-left:0; }
+  .theme-opt .lab{ font-size:.9rem; font-weight:600; line-height:1.1; }
+  .theme-opt .desc{ font-family:var(--mono); font-size:.66rem; color:var(--faint); margin-top:2px; }
+  .theme-opt[aria-selected="true"]{ background:color-mix(in srgb,var(--accent) 14%, transparent); }
+  .theme-opt .tick{ margin-left:auto; color:var(--accent); opacity:0; }
+  .theme-opt[aria-selected="true"] .tick{ opacity:1; }
+
+  /* ===== hero ===== */
+  .hero{ position:relative; padding:clamp(60px,13vh,140px) 0 clamp(40px,7vh,72px); }
+  #field{ position:absolute; inset:0; width:100%; height:100%; z-index:0; opacity:var(--field-op); pointer-events:none;
+    transition:opacity .6s ease; -webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent); mask-image:linear-gradient(to bottom,#000 55%,transparent); }
+  .hero .wrap{ position:relative; z-index:1; }
+  .hero-eyebrow{ display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+  .hero-eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent); }
+  h1.name{ font-family:var(--sans); font-weight:800; letter-spacing:-.035em; font-size:var(--hero-size); line-height:.92; margin:0 0 26px; text-wrap:balance; }
+  h1.name .lastname{ color:var(--accent); }
+  .tagline{ font-size:clamp(1.2rem,2.2vw,1.6rem); line-height:1.38; max-width:32ch; margin:0 0 20px; text-wrap:balance; }
+  .tagline .soft{ color:var(--muted); }
+  .about{ color:var(--muted); max-width:60ch; font-size:1.03rem; margin:0 0 34px; }
+  .about b{ color:var(--ink); font-weight:600; }
+  .links{ display:flex; flex-wrap:wrap; gap:10px; }
+  .link{ display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:.8rem; padding:10px 16px;
+    border:1px solid var(--line); border-radius:999px; background:var(--surface); color:var(--ink); cursor:pointer;
+    transition:transform .25s var(--ease), border-color .2s, color .2s; }
+  .link svg{ width:15px; height:15px; }
+  .link:hover{ transform:translateY(-2px); border-color:var(--accent); color:var(--accent); }
+  .link.primary{ background:var(--accent); color:var(--accent-ink); border-color:transparent; }
+  .link.primary:hover{ color:var(--accent-ink); filter:brightness(1.07); }
+
+  /* ===== sections ===== */
+  section{ padding:clamp(46px,8vh,84px) 0; position:relative; }
+  .sec-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:30px; border-bottom:1px solid var(--line); padding-bottom:14px; }
+  .sec-head h2{ font-family:var(--sans); font-weight:800; letter-spacing:-.03em; font-size:clamp(1.5rem,3.2vw,2.15rem); margin:0; }
+  .sec-head .count{ font-family:var(--mono); font-size:.75rem; color:var(--faint); }
+  .projects{ display:grid; gap:18px; }
+  .card{ position:relative; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:clamp(22px,3vw,34px);
+    display:grid; grid-template-columns:1fr; gap:16px; transition:transform .35s var(--ease), border-color .3s, box-shadow .35s var(--ease); }
+  @media (min-width:720px){ .card{ grid-template-columns:1.12fr 1fr; align-items:start; } }
+  .card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb,var(--accent) 55%,var(--line)); box-shadow:0 20px 54px -26px color-mix(in srgb,var(--accent) 55%,transparent); }
+  .card h3{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; font-size:1.4rem; margin:0 0 12px; }
+  .card p{ margin:0 0 14px; color:var(--muted); font-size:.98rem; }
+  .card p b{ color:var(--ink); }
+  .stat-line{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ font-family:var(--mono); font-size:.68rem; letter-spacing:.04em; padding:4px 9px; border-radius:3px; background:var(--surface-2); color:var(--muted); border:1px solid var(--line); }
+  .chip.live{ color:var(--accent); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
+  .chip.live::before{ content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-right:6px; vertical-align:1px; animation:pulse 2s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+  @media (prefers-reduced-motion:reduce){ .chip.live::before{ animation:none; } }
+  .repos{ display:flex; flex-direction:column; gap:2px; align-self:start; }
+  .repo{ display:flex; align-items:center; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:.8rem; padding:9px 12px; border-radius:3px; color:var(--ink); border:1px solid transparent; transition:background .2s, border-color .2s, color .2s; }
+  .repo:hover{ background:var(--surface-2); border-color:var(--line); color:var(--accent); }
+  .repo .kind{ color:var(--faint); font-size:.7rem; }
+  .repo .arrow{ opacity:0; transform:translateX(-4px); transition:all .2s var(--ease); }
+  .repo:hover .arrow{ opacity:1; transform:none; }
+
+  /* contact / résumé */
+  .contact-grid{ display:grid; gap:14px; }
+  .reveal-row{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+  .reveal-btn{ font-family:var(--mono); font-size:.8rem; cursor:pointer; padding:10px 16px; border:1px dashed var(--line); border-radius:999px; background:var(--surface); color:var(--muted); transition:border-color .2s, color .2s, transform .25s var(--ease); }
+  .reveal-btn:hover{ border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+  .revealed{ font-family:var(--mono); font-size:.85rem; }
+  .revealed a{ color:var(--accent); }
+  .resume{ margin-top:8px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; max-height:0; opacity:0; transition:max-height .5s var(--ease), opacity .4s ease; }
+  .resume.open{ max-height:3600px; opacity:1; }
+  .resume-inner{ padding:clamp(24px,3.5vw,40px); }
+  .r-name{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; font-size:1.7rem; margin:0 0 4px; }
+  .r-contact{ font-family:var(--mono); font-size:.78rem; color:var(--muted); margin-bottom:26px; }
+  .r-sec{ margin-top:26px; }
+  .r-sec > .eyebrow{ display:block; padding-bottom:8px; border-bottom:1px solid var(--line); margin-bottom:16px; }
+  .r-job{ margin-bottom:18px; }
+  .r-job .top{ display:flex; justify-content:space-between; gap:12px; align-items:baseline; flex-wrap:wrap; }
+  .r-job .org{ font-weight:600; }
+  .r-job .when{ font-family:var(--mono); font-size:.72rem; color:var(--faint); }
+  .r-job .role{ color:var(--accent); font-size:.92rem; margin:2px 0 8px; }
+  .r-job ul{ margin:0; padding-left:1.1em; color:var(--muted); font-size:.93rem; }
+  .r-job li{ margin:4px 0; }
+  .r-skills div{ margin:6px 0; font-size:.93rem; }
+  .r-skills .k{ font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--faint); margin-right:8px; }
+  .edu-row{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:.95rem; }
+  .edu-row .when{ font-family:var(--mono); font-size:.72rem; color:var(--faint); }
+
+  footer{ padding:40px 0 60px; border-top:1px solid var(--line); }
+  .foot-grid{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .foot-grid p{ margin:0; font-family:var(--mono); font-size:.74rem; color:var(--faint); }
+
+  .r{ opacity:0; transform:translateY(22px); transition:opacity .6s var(--ease), transform .6s var(--ease); }
+  .r.in{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion:reduce){ .r{ opacity:1; transform:none; transition:none; } }
+
+  #glow{ position:fixed; z-index:0; width:520px; height:520px; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, color-mix(in srgb,var(--accent) 20%, transparent), transparent 66%); transform:translate(-50%,-50%); mix-blend-mode:screen; opacity:0; transition:opacity .5s ease; }
+
+  /* day-mode prompt */
+  .prompt{ position:fixed; z-index:80; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); display:flex; align-items:center; gap:14px; flex-wrap:wrap; max-width:min(92vw,520px);
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; box-shadow:0 24px 60px -18px rgba(0,0,0,.5); opacity:0; pointer-events:none; transition:opacity .4s ease, transform .4s var(--ease); }
+  .prompt.show{ opacity:1; transform:translateX(-50%); pointer-events:auto; }
+  .prompt .txt{ font-size:.9rem; color:var(--ink); }
+  .prompt .txt small{ display:block; color:var(--faint); font-family:var(--mono); font-size:.7rem; margin-top:2px; }
+  .prompt .pbtns{ display:flex; gap:8px; margin-left:auto; }
+  .pbtn{ font-family:var(--mono); font-size:.74rem; cursor:pointer; padding:8px 13px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--muted); transition:.2s; }
+  .pbtn.go{ background:var(--accent); color:var(--accent-ink); border-color:transparent; }
+  .pbtn:hover{ border-color:var(--accent); color:var(--accent); }
+  .pbtn.go:hover{ color:var(--accent-ink); filter:brightness(1.07); }
+
+  /* ===== D20 trigger (corner) ===== */
+  #dice{ position:fixed; z-index:70; right:22px; top:46%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; }
+  @media (max-width:640px){ #dice{ top:auto; bottom:18px; right:16px; transform:none; } }
+  .d20{ width:60px; height:60px; border:0; background:transparent; cursor:pointer; padding:0; position:relative; filter:drop-shadow(0 6px 16px color-mix(in srgb,var(--accent) 40%,transparent)); transition:transform .2s var(--ease); }
+  .d20:hover{ transform:scale(1.06); } .d20:active{ transform:scale(.94); }
+  .d20 svg{ width:100%; height:100%; display:block; }
+  .d20 .poly{ fill:var(--surface); stroke:var(--accent); stroke-width:3; }
+  .d20 .facet{ fill:none; stroke:var(--accent); stroke-width:1.2; opacity:.45; }
+  .d20 .num{ position:absolute; inset:0; display:grid; place-items:center; font-family:var(--sans); font-weight:800; font-size:1.35rem; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .d20.crit{ filter:drop-shadow(0 0 18px var(--accent)); } .d20.crit .num{ color:var(--accent); }
+  .d20.fumble{ filter:drop-shadow(0 4px 10px rgba(180,40,40,.5)); }
+  .d20-cap{ font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); max-width:130px; text-align:center; line-height:1.3; }
+
+  #roll-msg{ position:fixed; z-index:70; right:96px; top:46%; transform:translateY(-50%) translateX(8px); max-width:230px; text-align:right;
+    font-family:var(--mono); font-size:.8rem; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 13px;
+    opacity:0; pointer-events:none; transition:opacity .25s, transform .25s var(--ease); box-shadow:0 12px 32px -16px rgba(0,0,0,.5); }
+  #roll-msg.show{ opacity:1; transform:translateY(-50%) translateX(0); }
+  #roll-msg b{ color:var(--accent); }
+  @media (max-width:640px){ #roll-msg{ right:16px; top:auto; bottom:88px; transform:none; text-align:left; max-width:60vw; } #roll-msg.show{ transform:none; } }
+
+  /* ===== full-screen dice throw ===== */
+  #throw{ position:fixed; inset:0; z-index:85; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; pointer-events:none; opacity:0; transition:opacity .4s ease; }
+  #throw.show{ opacity:1; }
+  #bigdie{ width:clamp(120px,20vw,168px); height:clamp(120px,20vw,168px); position:relative; will-change:transform;
+    filter:drop-shadow(0 12px 34px color-mix(in srgb,var(--accent) 45%,transparent)); }
+  #bigdie svg{ width:100%; height:100%; display:block; }
+  #bigdie .poly{ fill:color-mix(in srgb,var(--surface) 86%, transparent); stroke:var(--accent); stroke-width:3; }
+  #bigdie .facet{ fill:none; stroke:var(--accent); stroke-width:1.2; opacity:.5; }
+  #bigdie .num{ position:absolute; inset:0; display:grid; place-items:center; font-family:var(--sans); font-weight:800; font-size:clamp(3rem,7vw,4rem); color:var(--ink); font-variant-numeric:tabular-nums; }
+  #bigdie.crit{ filter:drop-shadow(0 0 34px var(--accent)); } #bigdie.crit .num{ color:var(--accent); }
+  #bigdie.fumble .num{ color:#d46b6b; }
+  #throw-msg{ font-family:var(--mono); font-size:clamp(.9rem,1.6vw,1.05rem); color:var(--ink); text-align:center; max-width:min(84vw,440px); min-height:1.2em; }
+  #throw-msg b{ color:var(--accent); }
+  #confetti{ position:fixed; inset:0; z-index:86; pointer-events:none; }
+</style>
+
+<div id="glow" aria-hidden="true"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<div class="bar">
+  <div class="sig"><b>Daniel Grkinich</b> — preview</div>
+  <div class="theme-wrap">
+    <button class="theme-btn" id="theme-btn" aria-haspopup="true" aria-expanded="false"><span class="sw"></span><span id="theme-cur">Arcane</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="menu" id="theme-menu" role="menu" aria-label="Theme"><div class="mh">Theme — night by default</div></div>
+  </div>
+</div>
+
+<header class="hero">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="hero-eyebrow r"><span class="dot"></span><span class="eyebrow">Data analyst by day · builder by night</span></div>
+    <h1 class="name r">Daniel <span class="lastname">Grkinich</span></h1>
+    <p class="tagline r">I build tools and systems — <span class="soft">lately TTRPG tooling for Pathfinder&nbsp;&amp;&nbsp;FoundryVTT.</span></p>
+    <p class="about r">A <b>data &amp; automation analyst</b> in healthcare economics — currently a Senior Healthcare Economic Consultant at <b>UnitedHealthcare</b> (AI-governance + Python automation). Off the clock I build software and tools for fun, mostly for tabletop RPGs. Everything here is stuff I made because I wanted it to exist.</p>
+    <div class="links r">
+      <a class="link primary" href="https://github.com/The-Data-is-a-lie" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 8.4 22.9c.6.1.8-.25.8-.56v-2c-3.3.72-4-1.4-4-1.4-.55-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.73.08-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .31.2.67.81.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+        GitHub</a>
+      <a class="link" href="https://www.linkedin.com/in/daniel-grkinich-a93847199/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 5 8.5a2.5 2.5 0 0 1 0-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.5c0-1.31-.02-3-1.83-3-1.83 0-2.11 1.43-2.11 2.9V21H9z"/></svg>
+        LinkedIn</a>
+      <a class="link" href="https://foundryvtt.com/packages/pf1e-random-char-generator" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke-linejoin="round"/><path d="m3 7 9 5 9-5M12 12v10" stroke-linejoin="round"/></svg>
+        FoundryVTT</a>
+      <button class="link" id="email-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <span id="email-label">Reveal email</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="work">
+    <div class="sec-head r"><h2>Selected work</h2><span class="count tnum">03 projects</span></div>
+    <div class="projects">
+
+      <article class="card r">
+        <div class="head">
+          <h3>Pathfinder Character Sheet</h3>
+          <p>A browser-based Pathfinder 1e character sheet — vanilla HTML/CSS/JS, no build step, runs entirely client-side with local save. The one project here you can open and click around in right now.</p>
+          <div class="stat-line"><span class="chip live">Live demo</span><span class="chip">JavaScript</span><span class="chip">Static · no backend</span></div>
+        </div>
+        <div class="repos">
+          <a class="repo" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener"><span>Open the live sheet <span class="kind">↗ github.io</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder-Character-Sheet" target="_blank" rel="noopener"><span>Source <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+        </div>
+      </article>
+
+      <article class="card r">
+        <div class="head">
+          <h3>PF1e Character Generator</h3>
+          <p>An open-source Pathfinder 1e character generator — a <b>50,000-source</b> web-scraping pipeline and <b>300+</b> automation functions (Flask · JavaScript · Docker), in production since 2023 and published for every FoundryVTT user.</p>
+          <div class="stat-line"><span class="chip">Flask</span><span class="chip">JavaScript</span><span class="chip">Docker</span><span class="chip">Since 2023</span></div>
+        </div>
+        <div class="repos">
+          <a class="repo" href="https://foundryvtt.com/packages/pf1e-random-char-generator" target="_blank" rel="noopener"><span>Install on FoundryVTT <span class="kind">↗ package</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder_Char_Creator" target="_blank" rel="noopener"><span>Generator backend <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/FoundryVTT_Random_Pf1e_Char_Generator" target="_blank" rel="noopener"><span>Foundry module <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://gitlab.com/pathfinder_1e_randomized_character_generator/FoundryVTT_Random_Pf1e_Char_Generator/-/wikis/home" target="_blank" rel="noopener"><span>Docs &amp; wiki <span class="kind">↗ gitlab</span></span><span class="arrow">→</span></a>
+        </div>
+      </article>
+
+      <article class="card r">
+        <div class="head">
+          <h3>FoundryVTT PF1e tooling</h3>
+          <p>A suite of small Foundry VTT modules and macros that smooth out Pathfinder 1e at the table — grouped one-click buffs, handy utility macros, multi-token buff distribution, and letting one character take multiple initiative slots.</p>
+          <div class="stat-line"><span class="chip">Foundry module</span><span class="chip">JavaScript</span><span class="chip">4 tools</span></div>
+        </div>
+        <div class="repos">
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/pf1-buff-bundles" target="_blank" rel="noopener"><span>pf1-buff-bundles <span class="kind">↗ grouped buffs</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry_VTT_Pf_1e_Handy_Macros" target="_blank" rel="noopener"><span>Handy PF1e macros <span class="kind">↗ utilities</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry-VTT-Multi-Buff-Distributer-Macro" target="_blank" rel="noopener"><span>Multi-buff distributor <span class="kind">↗ macro</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/multiple-initiatives" target="_blank" rel="noopener"><span>multiple-initiatives <span class="kind">↗ module</span></span><span class="arrow">→</span></a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="sec-head r"><h2>Get in touch</h2><span class="count">no bots, please</span></div>
+    <div class="contact-grid r">
+      <p class="about" style="margin:0 0 6px">Best ways to reach me — email and résumé are hidden from scrapers until you ask for them.</p>
+      <div class="reveal-row">
+        <button class="reveal-btn" id="email-btn2" type="button">✦ Reveal email address</button>
+        <span class="revealed" id="email-out" hidden></span>
+      </div>
+      <div class="reveal-row">
+        <button class="reveal-btn" id="resume-btn" type="button">✦ View résumé</button>
+        <span class="eyebrow" id="resume-note" hidden>phone number removed · email &amp; LinkedIn only</span>
+      </div>
+
+      <div class="resume" id="resume" aria-hidden="true">
+        <div class="resume-inner">
+          <p class="r-name">Daniel Grkinich</p>
+          <p class="r-contact" id="r-contact">Résumé — reveal to load contact line</p>
+
+          <div class="r-sec">
+            <span class="eyebrow">Campaign log · experience</span>
+            <div class="r-job">
+              <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Mar 2026 — Present</span></div>
+              <div class="role">Senior Healthcare Economic Consultant</div>
+              <ul>
+                <li>Technical lead for a newly-formed AI Governance team; designed and shipped an AI agent that cut the PM team's workload by an estimated 80%.</li>
+                <li>Automated leadership reporting in Python, including reports sent directly to the C-suite.</li>
+              </ul>
+            </div>
+            <div class="r-job">
+              <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Oct 2024 — Mar 2026</span></div>
+              <div class="role">Healthcare Economic Consultant</div>
+              <ul>
+                <li>Led a small team to automate a recurring quarterly process end-to-end in Python — from a 5-person to a 1-person effort, saving ~24 work-months per year.</li>
+                <li>Supported reporting &amp; compliance for a value-based-care program spanning <span class="tnum">$20B+</span> in annual spend (<span class="tnum">$1B+</span> saved) across <span class="tnum">800+</span> hospital systems.</li>
+                <li>Built value-based-care metrics from claims-level data (readmission ratio, inpatient LOS, ER-to-inpatient escalation) to quantify medical-cost savings.</li>
+                <li>Designed and led monthly Python automation training; onboarded and standardized practices across new analysts.</li>
+              </ul>
+            </div>
+            <div class="r-job">
+              <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Apr 2022 — Oct 2024</span></div>
+              <div class="role">Senior Healthcare Economic Analyst</div>
+              <ul>
+                <li>Built SAS and Unix data pipelines over claims datasets exceeding <span class="tnum">100M</span> rows (inpatient, facility, financial, outpatient/ER).</li>
+                <li>Developed a scikit-learn classifier to flag the top 5% most expensive events, improving F1 by 10%+ over the prior model.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="r-sec">
+            <span class="eyebrow">Notable project</span>
+            <div class="r-job">
+              <div class="top"><span class="org">Full-Stack / Automation Engineering</span><span class="when">Oct 2023 — Present</span></div>
+              <div class="role">Personal project</div>
+              <ul><li>Independently designed and shipped an open-source Pathfinder 1e character generator (Flask, JavaScript, Docker) — a 50,000-source scraping pipeline with 300+ automation functions, in production since 2023 and published to all FoundryVTT users.</li></ul>
+            </div>
+          </div>
+
+          <div class="r-sec">
+            <span class="eyebrow">Education</span>
+            <div class="edu-row"><span><b>M.S. Economics</b> — Cal State University, Fullerton</span><span class="when">2020 — 2022</span></div>
+            <div class="edu-row" style="margin-top:8px"><span><b>B.S. Economics</b> — University of California, Irvine</span><span class="when">2017 — 2020</span></div>
+          </div>
+
+          <div class="r-sec r-skills">
+            <span class="eyebrow">Skills</span>
+            <div><span class="k">Programming</span>Python · SQL · SAS · JavaScript · Flask · Snowflake · Unix · Git · Docker · OOP</div>
+            <div><span class="k">Data &amp; BI</span>Advanced Excel · Visual Basic · Tableau · Power BI · Automation</div>
+            <div><span class="k">Healthcare</span>Inpatient Utilization · DRG Groupers · ICD-10 Coding · Capitation &amp; Risk Delegation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-grid">
+    <p>No natural 1s were rolled in the making of this site.</p>
+    <p>© 2026 Daniel Grkinich · vanilla JS</p>
+  </div>
+</footer>
+
+<div class="prompt" id="prompt" role="dialog" aria-label="Theme preference">
+  <div class="txt">🌙 It's set to <b>night mode</b>.<small>pick from more themes up top · roll a nat 20 to unlock one more</small></div>
+  <div class="pbtns"><button class="pbtn" id="p-keep" type="button">Keep night</button><button class="pbtn go" id="p-day" type="button">Day mode</button></div>
+</div>
+
+<div id="dice">
+  <button class="d20" id="d20" type="button" aria-label="Roll a d20">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <polygon class="poly" points="50,5 91,28 91,72 50,95 9,72 9,28"/>
+      <polygon class="facet" points="50,5 68,38 32,38"/><polygon class="facet" points="32,38 68,38 50,72"/>
+      <line class="facet" x1="9" y1="28" x2="32" y2="38"/><line class="facet" x1="91" y1="28" x2="68" y2="38"/>
+      <line class="facet" x1="50" y1="72" x2="50" y2="95"/><line class="facet" x1="32" y1="38" x2="9" y2="72"/><line class="facet" x1="68" y1="38" x2="91" y2="72"/>
+    </svg>
+    <span class="num" id="d20-num">20</span>
+  </button>
+  <span class="d20-cap" id="d20-cap">roll me</span>
+</div>
+<div id="roll-msg" role="status" aria-live="polite"></div>
+
+<div id="throw" aria-hidden="true">
+  <div id="bigdie">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <polygon class="poly" points="50,5 91,28 91,72 50,95 9,72 9,28"/>
+      <polygon class="facet" points="50,5 68,38 32,38"/><polygon class="facet" points="32,38 68,38 50,72"/>
+      <line class="facet" x1="9" y1="28" x2="32" y2="38"/><line class="facet" x1="91" y1="28" x2="68" y2="38"/>
+      <line class="facet" x1="50" y1="72" x2="50" y2="95"/><line class="facet" x1="32" y1="38" x2="9" y2="72"/><line class="facet" x1="68" y1="38" x2="91" y2="72"/>
+    </svg>
+    <span class="num" id="bigdie-num">20</span>
+  </div>
+  <div id="throw-msg"></div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- themes (seeded from the Pathfinder-Character-Sheet palettes) ---------- */
+  var THEMES=[
+    {id:"arcane",label:"Arcane",desc:"indigo night + gold",dark:true,c:["#0A0C16","#E7B24C","#ECE6D6"]},
+    {id:"storm",label:"Storm",desc:"indigo night sky",dark:true,c:["#0C0E18","#8A8AD4","#E4E4F6"]},
+    {id:"ember",label:"Ember",desc:"warm crimson",dark:true,c:["#140C0C","#E07060","#F0E0D8"]},
+    {id:"ocean",label:"Ocean",desc:"cool blue dark",dark:true,c:["#0E1318","#7EB3D4","#E4EEF6"]},
+    {id:"midnight",label:"Midnight",desc:"neutral + soft red",dark:true,c:["#121212","#CF7A7A","#ECECEC"]},
+    {id:"contrast",label:"High contrast",desc:"black · white · gold",dark:true,c:["#000000","#FFE566","#FFFFFF"]},
+    {id:"parchment",label:"Parchment",desc:"classic PF day",dark:false,c:["#F3EAD7","#7A1F1F","#2B2115"]},
+    {id:"gold",label:"Gold",desc:"amber treasure day",dark:false,c:["#F5ECD4","#9A6B1A","#2A2210"]},
+    {id:"forest",label:"Forest",desc:"druid greens",dark:false,c:["#E8EFE4","#2D5A3D","#1A2418"]},
+    {id:"slate",label:"Slate",desc:"cool neutral day",dark:false,c:["#EEF0F3","#3D4F66","#1C1F24"]}
+  ];
+  var NAT20={id:"nat20",label:"Natural 20",desc:"unlocked · crit gold",dark:true,c:["#050505","#FFD24A","#FFFFFF"]};
+  var BY={}; function idx(){ BY={}; THEMES.forEach(function(t){ BY[t.id]=t; }); } idx();
+
+  function hx(h){ h=h.replace("#",""); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+  function toHex(a){ return "#"+a.map(function(n){ n=Math.max(0,Math.min(255,Math.round(n))); return (n<16?"0":"")+n.toString(16); }).join(""); }
+  function mix(a,b,t){ a=hx(a); b=hx(b); return toHex([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]); }
+  function lum(h){ var c=hx(h).map(function(v){ v/=255; return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4); }); return .2126*c[0]+.7152*c[1]+.0722*c[2]; }
+
+  var curAccent="#E7B24C";
+  function applyTheme(id){
+    var t=BY[id]||BY.arcane, bg=t.c[0], accent=t.c[1], ink=t.c[2], s=root.style; curAccent=accent;
+    s.setProperty("--bg",bg); s.setProperty("--ink",ink); s.setProperty("--accent",accent);
+    s.setProperty("--surface",mix(bg,ink,.05)); s.setProperty("--surface-2",mix(bg,ink,.11)); s.setProperty("--line",mix(bg,ink,.17));
+    s.setProperty("--muted",mix(ink,bg,.34)); s.setProperty("--faint",mix(ink,bg,.54));
+    s.setProperty("--accent-ink", lum(accent)>.55?mix(bg,"#000000",.12):"#ffffff");
+    s.setProperty("--field-op", t.dark?"1":"0.38");
+    document.getElementById("theme-cur").textContent=t.label;
+    Array.prototype.forEach.call(document.querySelectorAll(".theme-opt"),function(o){ o.setAttribute("aria-selected",String(o.dataset.id===id)); });
+    try{ localStorage.setItem("site.theme",id); }catch(e){}
+  }
+  var menu=document.getElementById("theme-menu");
+  function buildMenu(){
+    Array.prototype.slice.call(menu.querySelectorAll(".theme-opt")).forEach(function(n){ n.remove(); });
+    THEMES.forEach(function(t){
+      var b=document.createElement("button"); b.className="theme-opt"; b.setAttribute("role","menuitemradio"); b.dataset.id=t.id;
+      b.innerHTML='<span class="dots"><span class="dot" style="background:'+t.c[0]+'"></span><span class="dot" style="background:'+t.c[1]+'"></span><span class="dot" style="background:'+t.c[2]+'"></span></span><span><span class="lab">'+t.label+'</span><span class="desc">'+t.desc+'</span></span><span class="tick">✓</span>';
+      b.addEventListener("click",function(){ applyTheme(t.id); closeMenu(); });
+      menu.appendChild(b);
+    });
+    var cur=document.getElementById("theme-cur").textContent;
+    Array.prototype.forEach.call(document.querySelectorAll(".theme-opt"),function(o){ o.setAttribute("aria-selected",String(o.querySelector(".lab").textContent===cur)); });
+  }
+  var tbtn=document.getElementById("theme-btn");
+  function openMenu(){ menu.classList.add("open"); tbtn.setAttribute("aria-expanded","true"); }
+  function closeMenu(){ menu.classList.remove("open"); tbtn.setAttribute("aria-expanded","false"); }
+  tbtn.addEventListener("click",function(e){ e.stopPropagation(); menu.classList.contains("open")?closeMenu():openMenu(); });
+  document.addEventListener("click",function(e){ if(!menu.contains(e.target)&&e.target!==tbtn) closeMenu(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeMenu(); });
+
+  var unlocked=false; try{ unlocked=localStorage.getItem("site.nat20")==="1"; }catch(e){}
+  if(unlocked && !BY.nat20){ THEMES.push(NAT20); idx(); }
+  buildMenu();
+  var saved=null; try{ saved=localStorage.getItem("site.theme"); }catch(e){}
+  applyTheme(saved&&BY[saved]?saved:"arcane");
+  if(!saved){
+    var pr=document.getElementById("prompt"); setTimeout(function(){ pr.classList.add("show"); },1100);
+    document.getElementById("p-day").addEventListener("click",function(){ applyTheme("parchment"); pr.classList.remove("show"); });
+    document.getElementById("p-keep").addEventListener("click",function(){ try{localStorage.setItem("site.theme","arcane");}catch(e){} pr.classList.remove("show"); });
+  }
+
+  /* ---------- email + résumé ---------- */
+  var addr=["daniel","grkinich"].join("")+"@"+["gmail","com"].join(".");
+  var eb=document.getElementById("email-btn"), el=document.getElementById("email-label");
+  eb.addEventListener("click",function(){ if(el.textContent===addr){ location.href="mailto:"+addr; return; } el.textContent=addr; eb.classList.add("primary"); });
+  document.getElementById("email-btn2").addEventListener("click",function(){ var out=document.getElementById("email-out"); out.hidden=false; out.innerHTML='<a href="mailto:'+addr+'">'+addr+'</a>'; this.textContent="✦ Email revealed ↓"; this.disabled=true; this.style.opacity=.6; });
+  var rb=document.getElementById("resume-btn"), rp=document.getElementById("resume");
+  rb.addEventListener("click",function(){ var open=rp.classList.toggle("open"); rp.setAttribute("aria-hidden",String(!open)); document.getElementById("resume-note").hidden=!open; rb.textContent=open?"✦ Hide résumé":"✦ View résumé";
+    if(open){ document.getElementById("r-contact").innerHTML='<a href="mailto:'+addr+'">'+addr+'</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/daniel-grkinich-a93847199/" target="_blank" rel="noopener">linkedin.com/in/daniel-grkinich</a>'; setTimeout(function(){ rp.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"}); },120); } });
+
+  /* ---------- scroll reveal / glow / constellation ---------- */
+  var items=document.querySelectorAll(".r");
+  if(reduce||!("IntersectionObserver" in window)){ items.forEach(function(n){ n.classList.add("in"); }); }
+  else { var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }); },{threshold:.12,rootMargin:"0px 0px -8% 0px"}); items.forEach(function(n){ io.observe(n); }); }
+  var glow=document.getElementById("glow");
+  if(!reduce){ glow.style.opacity=1; addEventListener("pointermove",function(e){ glow.style.left=e.clientX+"px"; glow.style.top=e.clientY+"px"; },{passive:true}); }
+  var cv=document.getElementById("field"), ctx=cv.getContext("2d"), raf=null, pts=[], W=0,H=0, dpr=Math.min(devicePixelRatio||1,2);
+  function size(){ var h=cv.parentElement; W=h.offsetWidth; H=h.offsetHeight; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function build(){ size(); var n=Math.min(78,Math.round(W*H/15000)); pts=[]; for(var i=0;i<n;i++){ pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18}); } }
+  function draw(){ ctx.clearRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){ var p=pts[i]; p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+      for(var j=i+1;j<pts.length;j++){ var q=pts[j],dx=p.x-q.x,dy=p.y-q.y,dd=dx*dx+dy*dy; if(dd<12500){ ctx.globalAlpha=(1-dd/12500)*.26; ctx.strokeStyle=curAccent; ctx.lineWidth=.6; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); } }
+      ctx.globalAlpha=.75; ctx.fillStyle=curAccent; ctx.beginPath(); ctx.arc(p.x,p.y,1.1,0,6.283); ctx.fill(); }
+    ctx.globalAlpha=1; raf=requestAnimationFrame(draw); }
+  if(!reduce){ build(); raf=requestAnimationFrame(draw); }
+  addEventListener("resize",function(){ if(raf) build(); });
+
+  /* ---------- d20: crypto rolls, rig (honest 1-3, force #4), full-screen throw ---------- */
+  function randInt(min,max){ var span=max-min+1; if(crypto&&crypto.getRandomValues){ var buf=new Uint32Array(1), limit=Math.floor(0x100000000/span)*span, x; do{ crypto.getRandomValues(buf); x=buf[0]; }while(x>=limit); return min+(x%span); } return min+Math.floor(Math.random()*span); }
+  var QUIPS={
+    normal:["{n}. The dice have spoken.","A solid {n}.","{n} — not bad, not great. Very analyst of you.","You rolled a {n}. A wild recruiter appears.","{n}. The party nods respectfully.","{n}. Good enough for production."],
+    hi:["{n}! One shy of glory.","{n} — so close to greatness."],
+    nat20:["<b>NATURAL 20.</b> Critical hit!","<b>NAT 20!</b> The crowd goes wild.","<b>20.</b> Flawless. As intended."],
+    nat1:["Natural 1. …we don't talk about this one.","A <b>1</b>. Have you tried turning it off and on again?","Critical fumble. It's fine. Everything's fine.","1. This is why we have version control."]
+  };
+  function pick(a){ return a[randInt(0,a.length-1)]; }
+
+  /* rig state (per-visitor on the live site; in-memory fallback if storage is blocked) */
+  var got20=false, rollCount=0;
+  try{ got20=localStorage.getItem("site.got20")==="1"; rollCount=parseInt(localStorage.getItem("site.rollCount")||"0",10)||0; }catch(e){}
+  function rolledValue(){
+    if(got20) return randInt(1,20);              // honest forever after the first 20
+    rollCount++;
+    var v = (rollCount>=4) ? 20 : randInt(1,20); // honest rolls 1-3; force a 20 by roll #4
+    if(v===20) got20=true;
+    try{ localStorage.setItem("site.rollCount",String(rollCount)); if(got20) localStorage.setItem("site.got20","1"); }catch(e){}
+    return v;
+  }
+
+  var die=document.getElementById("d20"), dnum=document.getElementById("d20-num"), cap=document.getElementById("d20-cap");
+  var rmsg=document.getElementById("roll-msg"), rolling=false, msgT=null;
+  var thr=document.getElementById("throw"), big=document.getElementById("bigdie"), bnum=document.getElementById("bigdie-num"), tmsg=document.getElementById("throw-msg");
+
+  /* hover hint reveals the secret */
+  if(matchMedia("(hover: hover)").matches){
+    die.addEventListener("mouseenter",function(){ cap.textContent="roll a natural 20 for a surprise"; });
+    die.addEventListener("mouseleave",function(){ cap.textContent="roll me"; });
+    die.addEventListener("focus",function(){ cap.textContent="roll a natural 20 for a surprise"; });
+    die.addEventListener("blur",function(){ cap.textContent="roll me"; });
+  } else { cap.textContent="tap to roll a d20"; }
+
+  function showMsg(html){ rmsg.innerHTML=html; rmsg.classList.add("show"); clearTimeout(msgT); msgT=setTimeout(function(){ rmsg.classList.remove("show"); },4200); }
+
+  function roll(){
+    if(rolling) return; rolling=true;
+    var v=rolledValue(), crit=(v===20), fumble=(v===1);
+    var quip = crit?pick(QUIPS.nat20):fumble?pick(QUIPS.nat1):(v>=18?pick(QUIPS.hi).replace("{n}",v):pick(QUIPS.normal).replace("{n}",v));
+    dnum.textContent=v; die.classList.toggle("crit",crit); die.classList.toggle("fumble",fumble);
+    if(crit) unlockNat20();
+    if(reduce){ showMsg(quip); if(crit) burst(innerWidth/2,innerHeight/2); rolling=false; return; }
+    bigThrow(v,crit,fumble,quip);
+  }
+  function bigThrow(v,crit,fumble,quip){
+    big.className=""; bnum.textContent=v; tmsg.innerHTML="";
+    thr.classList.add("show");
+    big.style.transition="none";
+    big.style.transform="translate("+(-Math.round(innerWidth*0.62))+"px,-14vh) rotate(0deg) scale(.7)";
+    void big.offsetWidth; /* reflow so the next transform animates */
+    big.style.transition="transform 1s cubic-bezier(.16,.72,.29,1)";
+    big.style.transform="translate(0,0) rotate(766deg) scale(1)";
+    var spin=setInterval(function(){ bnum.textContent=randInt(1,20); },60);
+    setTimeout(function(){
+      clearInterval(spin); bnum.textContent=v;
+      if(crit){ big.classList.add("crit"); burst(innerWidth/2,innerHeight/2); }
+      else if(fumble){ big.classList.add("fumble"); }
+      tmsg.innerHTML=quip;
+      setTimeout(function(){ thr.classList.remove("show"); setTimeout(function(){ rolling=false; },440); }, 1050);
+    }, 1000);
+  }
+  die.addEventListener("click",roll);
+
+  function unlockNat20(){
+    if(BY.nat20) return;
+    THEMES.push(NAT20); idx(); buildMenu();
+    try{ localStorage.setItem("site.nat20","1"); }catch(e){}
+    setTimeout(function(){ showMsg('<b>Theme unlocked:</b> Natural 20 — up top ↑'); }, 2400);
+  }
+
+  /* confetti */
+  var conf=document.getElementById("confetti"), cctx=conf.getContext("2d"), parts=[], craf=null;
+  function csize(){ conf.width=innerWidth*dpr; conf.height=innerHeight*dpr; cctx.setTransform(dpr,0,0,dpr,0,0); }
+  csize(); addEventListener("resize",csize);
+  function burst(cx,cy){
+    if(reduce) return;
+    var cols=[curAccent,"#FFFFFF","#FFD24A",mix(curAccent,"#FFFFFF",.4)];
+    for(var i=0;i<110;i++){ var a=Math.random()*6.283, sp=3+Math.random()*8; parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-5,g:.16+Math.random()*.13,life:1,rot:Math.random()*6.283,vr:(Math.random()-.5)*.4,sz:5+Math.random()*6,col:cols[i%cols.length]}); }
+    if(!craf) craf=requestAnimationFrame(cdraw);
+  }
+  function cdraw(){
+    cctx.clearRect(0,0,innerWidth,innerHeight); var alive=false;
+    for(var i=0;i<parts.length;i++){ var p=parts[i]; if(p.life<=0) continue; alive=true;
+      p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life-=.011; p.vx*=.99;
+      cctx.save(); cctx.globalAlpha=Math.max(0,p.life); cctx.translate(p.x,p.y); cctx.rotate(p.rot); cctx.fillStyle=p.col; cctx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz*.5); cctx.restore(); }
+    if(alive) craf=requestAnimationFrame(cdraw); else { craf=null; cctx.clearRect(0,0,innerWidth,innerHeight); parts=[]; }
+  }
+})();
+</script>
+</body>
+</html>
