@@ -208,7 +208,7 @@
   #bigdie .facet{ fill:none; stroke:var(--accent); stroke-width:1.2; opacity:.5; }
   #bigdie .num{ position:absolute; inset:0; display:grid; place-items:center; font-family:var(--sans); font-weight:800; font-size:clamp(3rem,7vw,4rem); color:var(--ink); font-variant-numeric:tabular-nums; }
   #bigdie.crit{ filter:drop-shadow(0 0 34px var(--accent)); } #bigdie.crit .num{ color:var(--accent); }
-  #bigdie.fumble .num{ color:#d46b6b; }
+  #bigdie.fumble .num{ color:color-mix(in srgb,#d46b6b 74%,var(--ink)); }
   #throw-msg{ font-family:var(--mono); font-size:clamp(.9rem,1.6vw,1.05rem); color:var(--ink); text-align:center; max-width:min(84vw,440px); min-height:1.2em; }
   #throw-msg b{ color:var(--accent); }
   #confetti{ position:fixed; inset:0; z-index:86; pointer-events:none; }
@@ -383,7 +383,7 @@
 </footer>
 
 <div class="prompt" id="prompt" role="dialog" aria-label="Theme preference">
-  <div class="txt">🌙 It's set to <b>night mode</b>.<small>pick from more themes up top · roll a nat 20 to unlock one more</small></div>
+  <div class="txt">🌙 It's set to <b>night mode</b>.<small>pick from more themes up top · two more are hidden behind the d20</small></div>
   <div class="pbtns"><button class="pbtn" id="p-keep" type="button">Keep night</button><button class="pbtn go" id="p-day" type="button">Day mode</button></div>
 </div>
 
@@ -432,6 +432,7 @@
     {id:"slate",label:"Slate",desc:"cool neutral day",dark:false,c:["#EEF0F3","#3D4F66","#1C1F24"]}
   ];
   var NAT20={id:"nat20",label:"Natural 20",desc:"unlocked · crit gold",dark:true,c:["#050505","#FFD24A","#FFFFFF"]};
+  var NAT1={id:"nat1",label:"Natural 1",desc:"unlocked · cursed crimson",dark:true,c:["#0C0708","#C96A6A","#E8DADA"]};
   var BY={}; function idx(){ BY={}; THEMES.forEach(function(t){ BY[t.id]=t; }); } idx();
 
   function hx(h){ h=h.replace("#",""); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
@@ -452,14 +453,19 @@
     try{ localStorage.setItem("site.theme",id); }catch(e){}
   }
   var menu=document.getElementById("theme-menu");
+  /* earned themes render first, in this fixed order — unlock order is 20-then-1, but so is display */
+  var EARNED=[NAT20,NAT1];
+  function isEarned(id){ return id==="nat20"||id==="nat1"; }
   function buildMenu(){
     Array.prototype.slice.call(menu.querySelectorAll(".theme-opt")).forEach(function(n){ n.remove(); });
-    THEMES.forEach(function(t){
+    function opt(t){
       var b=document.createElement("button"); b.className="theme-opt"; b.setAttribute("role","menuitemradio"); b.dataset.id=t.id;
       b.innerHTML='<span class="dots"><span class="dot" style="background:'+t.c[0]+'"></span><span class="dot" style="background:'+t.c[1]+'"></span><span class="dot" style="background:'+t.c[2]+'"></span></span><span><span class="lab">'+t.label+'</span><span class="desc">'+t.desc+'</span></span><span class="tick">✓</span>';
       b.addEventListener("click",function(){ applyTheme(t.id); closeMenu(); });
       menu.appendChild(b);
-    });
+    }
+    EARNED.forEach(function(t){ if(BY[t.id]) opt(t); });          /* pinned to the top once unlocked */
+    THEMES.forEach(function(t){ if(!isEarned(t.id)) opt(t); });
     var cur=document.getElementById("theme-cur").textContent;
     Array.prototype.forEach.call(document.querySelectorAll(".theme-opt"),function(o){ o.setAttribute("aria-selected",String(o.querySelector(".lab").textContent===cur)); });
   }
@@ -470,8 +476,10 @@
   document.addEventListener("click",function(e){ if(!menu.contains(e.target)&&e.target!==tbtn) closeMenu(); });
   document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeMenu(); });
 
-  var unlocked=false; try{ unlocked=localStorage.getItem("site.nat20")==="1"; }catch(e){}
-  if(unlocked && !BY.nat20){ THEMES.push(NAT20); idx(); }
+  EARNED.forEach(function(t){
+    var on=false; try{ on=localStorage.getItem("site."+t.id)==="1"; }catch(e){}
+    if(on && !BY[t.id]){ THEMES.push(t); idx(); }
+  });
   buildMenu();
   var saved=null; try{ saved=localStorage.getItem("site.theme"); }catch(e){}
   applyTheme(saved&&BY[saved]?saved:"arcane");
@@ -507,7 +515,7 @@
   if(!reduce){ build(); raf=requestAnimationFrame(draw); }
   addEventListener("resize",function(){ if(raf) build(); });
 
-  /* ---------- d20: crypto rolls, rig (honest 1-3, force #4), full-screen throw ---------- */
+  /* ---------- d20: crypto rolls, scripted opening (20 then 1, then honest), full-screen throw ---------- */
   function randInt(min,max){ var span=max-min+1; if(crypto&&crypto.getRandomValues){ var buf=new Uint32Array(1), limit=Math.floor(0x100000000/span)*span, x; do{ crypto.getRandomValues(buf); x=buf[0]; }while(x>=limit); return min+(x%span); } return min+Math.floor(Math.random()*span); }
   var QUIPS={
     normal:["{n}. The dice have spoken.","A solid {n}.","{n} — not bad, not great. Very analyst of you.","You rolled a {n}. A wild recruiter appears.","{n}. The party nods respectfully.","{n}. Good enough for production."],
@@ -517,39 +525,53 @@
   };
   function pick(a){ return a[randInt(0,a.length-1)]; }
 
-  /* rig state (per-visitor on the live site; in-memory fallback if storage is blocked) */
-  var got20=false, rollCount=0;
-  try{ got20=localStorage.getItem("site.got20")==="1"; rollCount=parseInt(localStorage.getItem("site.rollCount")||"0",10)||0; }catch(e){}
+  /* scripted opening (per-visitor; in-memory fallback if storage is blocked):
+     stage 0 -> next roll is a 20, stage 1 -> next roll is a 1, stage 2+ -> honest forever */
+  var stage=0;
+  try{
+    stage=parseInt(localStorage.getItem("site.rollStage"),10);
+    if(!(stage>=0)) stage=(localStorage.getItem("site.got20")==="1")?1:0;  // migrate the old rig
+  }catch(e){ stage=0; }
   function rolledValue(){
-    if(got20) return randInt(1,20);              // honest forever after the first 20
-    rollCount++;
-    var v = (rollCount>=4) ? 20 : randInt(1,20); // honest rolls 1-3; force a 20 by roll #4
-    if(v===20) got20=true;
-    try{ localStorage.setItem("site.rollCount",String(rollCount)); if(got20) localStorage.setItem("site.got20","1"); }catch(e){}
+    if(stage>=2) return randInt(1,20);
+    var v=(stage===0)?20:1;
+    stage++;
+    try{ localStorage.setItem("site.rollStage",String(stage)); }catch(e){}
     return v;
   }
 
   var die=document.getElementById("d20"), dnum=document.getElementById("d20-num"), cap=document.getElementById("d20-cap");
-  var rmsg=document.getElementById("roll-msg"), rolling=false, msgT=null;
+  var rmsg=document.getElementById("roll-msg"), rolling=false, msgT=null, pendingMsg=null;
   var thr=document.getElementById("throw"), big=document.getElementById("bigdie"), bnum=document.getElementById("bigdie-num"), tmsg=document.getElementById("throw-msg");
 
-  /* hover hint reveals the secret */
-  if(matchMedia("(hover: hover)").matches){
-    die.addEventListener("mouseenter",function(){ cap.textContent="roll a natural 20 for a surprise"; });
-    die.addEventListener("mouseleave",function(){ cap.textContent="roll me"; });
-    die.addEventListener("focus",function(){ cap.textContent="roll a natural 20 for a surprise"; });
-    die.addEventListener("blur",function(){ cap.textContent="roll me"; });
-  } else { cap.textContent="tap to roll a d20"; }
+  /* caption: a stage-driven resting label on every device — this is what invites the second roll.
+     Hover only enriches the stage-0 phrasing; stages 1 and 2 read the same hovered or not. */
+  var HOVERABLE=matchMedia("(hover: hover)").matches;
+  function capText(hovering){
+    if(stage===0) return (hovering&&HOVERABLE) ? "roll a natural 20 for a surprise"
+                                               : (HOVERABLE ? "roll me" : "tap to roll a d20");
+    if(stage===1) return "press your luck";
+    return "honest rolls from here";
+  }
+  function syncCap(hovering){ cap.textContent=capText(hovering); }
+  die.addEventListener("mouseenter",function(){ syncCap(true); });
+  die.addEventListener("mouseleave",function(){ syncCap(false); });
+  die.addEventListener("focus",function(){ syncCap(true); });
+  die.addEventListener("blur",function(){ syncCap(false); });
+  syncCap(false);
 
   function showMsg(html){ rmsg.innerHTML=html; rmsg.classList.add("show"); clearTimeout(msgT); msgT=setTimeout(function(){ rmsg.classList.remove("show"); },4200); }
+  function flushPending(){ if(pendingMsg){ showMsg(pendingMsg); pendingMsg=null; } }
 
   function roll(){
     if(rolling) return; rolling=true;
     var v=rolledValue(), crit=(v===20), fumble=(v===1);
     var quip = crit?pick(QUIPS.nat20):fumble?pick(QUIPS.nat1):(v>=18?pick(QUIPS.hi).replace("{n}",v):pick(QUIPS.normal).replace("{n}",v));
     dnum.textContent=v; die.classList.toggle("crit",crit); die.classList.toggle("fumble",fumble);
-    if(crit) unlockNat20();
-    if(reduce){ showMsg(quip); if(crit) burst(innerWidth/2,innerHeight/2); rolling=false; return; }
+    if(crit) unlock(NAT20,'<b>Theme unlocked:</b> Natural 20 — up top ↑');
+    else if(fumble) unlock(NAT1,'<b>Cursed with a theme:</b> Natural 1 — up top ↑');
+    syncCap(false);
+    if(reduce){ showMsg(quip); if(crit) burst(innerWidth/2,innerHeight/2); setTimeout(flushPending,2400); rolling=false; return; }
     bigThrow(v,crit,fumble,quip);
   }
   function bigThrow(v,crit,fumble,quip){
@@ -564,28 +586,33 @@
     setTimeout(function(){
       clearInterval(spin); bnum.textContent=v;
       if(crit){ big.classList.add("crit"); burst(innerWidth/2,innerHeight/2); }
-      else if(fumble){ big.classList.add("fumble"); }
+      else if(fumble){ big.classList.add("fumble"); burst(innerWidth/2,innerHeight/2,"debris"); }
       tmsg.innerHTML=quip;
-      setTimeout(function(){ thr.classList.remove("show"); setTimeout(function(){ rolling=false; },440); }, 1050);
+      setTimeout(function(){ thr.classList.remove("show"); setTimeout(function(){ rolling=false; flushPending(); },440); }, 1050);
     }, 1000);
   }
   die.addEventListener("click",roll);
 
-  function unlockNat20(){
-    if(BY.nat20) return;
-    THEMES.push(NAT20); idx(); buildMenu();
-    try{ localStorage.setItem("site.nat20","1"); }catch(e){}
-    setTimeout(function(){ showMsg('<b>Theme unlocked:</b> Natural 20 — up top ↑'); }, 2400);
+  /* the toast waits for the throw overlay to clear (flushPending) so a fast second roll can't wipe it */
+  function unlock(t,msg){
+    if(BY[t.id]) return;
+    THEMES.push(t); idx(); buildMenu();
+    try{ localStorage.setItem("site."+t.id,"1"); }catch(e){}
+    pendingMsg=msg;
   }
 
   /* confetti */
   var conf=document.getElementById("confetti"), cctx=conf.getContext("2d"), parts=[], craf=null;
   function csize(){ conf.width=innerWidth*dpr; conf.height=innerHeight*dpr; cctx.setTransform(dpr,0,0,dpr,0,0); }
   csize(); addEventListener("resize",csize);
-  function burst(cx,cy){
+  /* mode "debris" = the fumble: duller, fewer, slower, and biased downward so it slumps instead of celebrating */
+  function burst(cx,cy,mode){
     if(reduce) return;
-    var cols=[curAccent,"#FFFFFF","#FFD24A",mix(curAccent,"#FFFFFF",.4)];
-    for(var i=0;i<110;i++){ var a=Math.random()*6.283, sp=3+Math.random()*8; parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-5,g:.16+Math.random()*.13,life:1,rot:Math.random()*6.283,vr:(Math.random()-.5)*.4,sz:5+Math.random()*6,col:cols[i%cols.length]}); }
+    var down=(mode==="debris");
+    var cols=down?["#6B6B6B","#8A8A8A","#4A3030",mix(curAccent,"#000000",.55)]
+                 :[curAccent,"#FFFFFF","#FFD24A",mix(curAccent,"#FFFFFF",.4)];
+    var n=down?70:110;
+    for(var i=0;i<n;i++){ var a=Math.random()*6.283, sp=down?(1+Math.random()*3):(3+Math.random()*8); parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp+(down?1:-5),g:.16+Math.random()*.13,life:1,rot:Math.random()*6.283,vr:(Math.random()-.5)*.4,sz:5+Math.random()*6,col:cols[i%cols.length]}); }
     if(!craf) craf=requestAnimationFrame(cdraw);
   }
   function cdraw(){
