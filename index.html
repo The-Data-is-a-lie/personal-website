@@ -310,7 +310,6 @@
       </div>
       <div class="reveal-row">
         <button class="reveal-btn" id="resume-btn" type="button">✦ View résumé</button>
-        <span class="eyebrow" id="resume-note" hidden>phone number removed · email &amp; LinkedIn only</span>
       </div>
 
       <div class="resume" id="resume" aria-hidden="true">
@@ -495,7 +494,7 @@
   eb.addEventListener("click",function(){ if(el.textContent===addr){ location.href="mailto:"+addr; return; } el.textContent=addr; eb.classList.add("primary"); });
   document.getElementById("email-btn2").addEventListener("click",function(){ var out=document.getElementById("email-out"); out.hidden=false; out.innerHTML='<a href="mailto:'+addr+'">'+addr+'</a>'; this.textContent="✦ Email revealed ↓"; this.disabled=true; this.style.opacity=.6; });
   var rb=document.getElementById("resume-btn"), rp=document.getElementById("resume");
-  rb.addEventListener("click",function(){ var open=rp.classList.toggle("open"); rp.setAttribute("aria-hidden",String(!open)); document.getElementById("resume-note").hidden=!open; rb.textContent=open?"✦ Hide résumé":"✦ View résumé";
+  rb.addEventListener("click",function(){ var open=rp.classList.toggle("open"); rp.setAttribute("aria-hidden",String(!open)); rb.textContent=open?"✦ Hide résumé":"✦ View résumé";
     if(open){ document.getElementById("r-contact").innerHTML='<a href="mailto:'+addr+'">'+addr+'</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/daniel-grkinich-a93847199/" target="_blank" rel="noopener">linkedin.com/in/daniel-grkinich</a>'; setTimeout(function(){ rp.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"}); },120); } });
 
   /* ---------- scroll reveal / glow / constellation ---------- */
