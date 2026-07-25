@@ -118,7 +118,8 @@
   .card p b{ color:var(--ink); }
   .stat-line{ display:flex; flex-wrap:wrap; gap:8px; }
   .chip{ font-family:var(--mono); font-size:.68rem; letter-spacing:.04em; padding:4px 9px; border-radius:3px; background:var(--surface-2); color:var(--muted); border:1px solid var(--line); }
-  .chip.live{ color:var(--accent); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
+  /* .live and .pkg share the accent treatment; only .live gets the pulsing dot (= "open it right now") */
+  .chip.live,.chip.pkg{ color:var(--accent); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
   .chip.live::before{ content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-right:6px; vertical-align:1px; animation:pulse 2s infinite; }
   @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
   @media (prefers-reduced-motion:reduce){ .chip.live::before{ animation:none; } }
@@ -128,6 +129,65 @@
   .repo .kind{ color:var(--faint); font-size:.7rem; }
   .repo .arrow{ opacity:0; transform:translateX(-4px); transition:all .2s var(--ease); }
   .repo:hover .arrow{ opacity:1; transform:none; }
+
+  /* ===== flagship card — the PF1e generator stays in slot 2 but outweighs its siblings ===== */
+  .card.flagship{ border-color:color-mix(in srgb,var(--accent) 28%,var(--line)); overflow:hidden; }
+  .card.flagship::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent); opacity:.85; }
+  .card.flagship::after{ content:""; position:absolute; right:0; top:0; width:min(60%,360px); height:min(60%,260px); pointer-events:none;
+    background:radial-gradient(circle at 100% 0%, color-mix(in srgb,var(--accent) 11%,transparent), transparent 70%); }
+  .card.flagship > *{ position:relative; z-index:1; }          /* keep content above the rail + corner glow */
+  .card-eyebrow{ display:block; color:var(--accent); margin-bottom:10px; }
+
+  /* metrics row — the numbers were buried mid-paragraph; they carry the card now */
+  .metrics{ display:grid; grid-template-columns:repeat(auto-fit,minmax(78px,1fr)); gap:12px; margin:0 0 16px;
+    padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .metrics div{ min-width:0; }
+  .metrics .n{ display:block; font-family:var(--sans); font-weight:800; font-size:1.3rem; line-height:1.1; letter-spacing:-.02em;
+    color:var(--ink); font-variant-numeric:tabular-nums; }
+  .metrics .l{ display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--faint); margin-top:3px; line-height:1.3; }
+
+  /* why / how hook — hanging-indent micro-label. Deliberately NOT bold: inside .card p,
+     bold already means "key term" (Path of War, conditional modifiers). */
+  .wh{ display:grid; grid-template-columns:42px 1fr; gap:2px 12px; margin:0 0 13px; }
+  .wh .k{ font-family:var(--mono); font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); padding-top:4px; }
+  .wh p{ margin:0; color:var(--muted); font-size:.98rem; }
+  @media (max-width:600px){ .wh{ grid-template-columns:36px 1fr; } }
+
+  /* architecture diagram — inline SVG so it themes for free and costs no request */
+  .arch{ margin:16px 0 0; }
+  .arch svg{ display:block; width:100%; height:auto; }
+  .arch .box{ fill:var(--surface-2); stroke:color-mix(in srgb,var(--accent) 38%,var(--line)); stroke-width:1; }
+  .arch .lbl{ fill:var(--ink); font-family:var(--mono); font-size:8px; }
+  .arch .sub{ fill:var(--faint); font-family:var(--mono); font-size:6px; }
+  .arch .flow{ stroke:var(--accent); stroke-width:1.2; opacity:.55; }
+  .arch .tip{ fill:var(--accent); opacity:.55; }
+  .arch figcaption{ font-family:var(--mono); font-size:.62rem; color:var(--faint); margin-top:8px; line-height:1.45; }
+
+  /* ===== sample character reveal (static output — Flask isn't hosted) ===== */
+  .sample{ grid-column:1/-1; padding-top:18px; border-top:1px solid var(--line); }
+  /* the banner sits INSIDE a card, which is itself var(--surface) — without this it'd be invisible */
+  .sample .expander{ background:var(--surface-2); }
+  .sample-out{ overflow:hidden; max-height:0; opacity:0; transition:max-height .5s var(--ease), opacity .4s ease; }
+  .sample-out.open{ max-height:1800px; opacity:1; }
+  .sheet{ display:grid; gap:13px; padding-top:18px; transition:opacity .2s ease; }
+  .sample-out.swap .sheet{ opacity:0; }
+  .sheet-top{ display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px; }
+  .sheet-top .who{ font-family:var(--sans); font-weight:800; font-size:1.08rem; letter-spacing:-.01em; color:var(--ink); }
+  .sheet-top .sys{ font-family:var(--mono); font-size:.72rem; color:var(--accent); }
+  .sheet-top .meta{ font-family:var(--mono); font-size:.68rem; color:var(--faint); }
+  .abils{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+  @media (max-width:480px){ .abils{ grid-template-columns:repeat(3,1fr); } }
+  .abils div{ background:var(--surface-2); border:1px solid var(--line); border-radius:3px; padding:7px 4px; text-align:center; }
+  .abils .k{ display:block; font-family:var(--mono); font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+  .abils .v{ display:block; font-family:var(--sans); font-weight:800; font-size:1.02rem; line-height:1.2; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .srow{ display:grid; grid-template-columns:96px 1fr; gap:12px; align-items:start; }
+  @media (max-width:600px){ .srow{ grid-template-columns:1fr; gap:3px; } }
+  .srow .k{ font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); padding-top:4px; }
+  .srow .v{ color:var(--muted); font-size:.88rem; min-width:0; }
+  .srow .v b{ color:var(--ink); font-weight:600; }
+  .sample-note{ font-family:var(--mono); font-size:.62rem; color:var(--faint); padding-top:13px; border-top:1px dashed var(--line); line-height:1.55; }
+  @media (prefers-reduced-motion:reduce){ .sheet{ transition:none; } .sample-out.swap .sheet{ opacity:1; } }
 
   /* ===== build notes (appendix — collapsed behind a full-width banner) ===== */
   .expander{ display:flex; align-items:center; justify-content:space-between; gap:18px; width:100%; text-align:left; cursor:pointer;
@@ -291,7 +351,8 @@
       <article class="card r">
         <div class="head">
           <h3>Pathfinder Character Sheet</h3>
-          <p>A browser-based Pathfinder 1e character sheet — vanilla HTML/CSS/JS, no build step, runs entirely client-side with local save. The one project here you can open and click around in right now.</p>
+          <div class="wh"><span class="k">Why</span><p>Playing Pathfinder shouldn't cost anything before you roll a die. I wanted a sheet anyone could open and share with their friends — no account, no subscription, nothing to install.</p></div>
+          <div class="wh"><span class="k">How</span><p>A browser-based Pathfinder 1e character sheet in vanilla HTML/CSS/JS — no build step, runs entirely client-side, saves locally. The one project here you can open as a full app and click around in right now.</p></div>
           <div class="stat-line"><span class="chip live">Live demo</span><span class="chip">JavaScript</span><span class="chip">Static · no backend</span></div>
         </div>
         <div class="repos">
@@ -300,32 +361,82 @@
         </div>
       </article>
 
-      <article class="card r">
+      <article class="card flagship r">
         <div class="head">
+          <span class="eyebrow card-eyebrow">✦ the deep one · three years in production</span>
           <h3>PF1e Character Generator</h3>
-          <p>An open-source Pathfinder 1e character generator — <b>55+</b> automation modules and <b>700+</b> Python functions that assemble a complete, rules-legal character from 12 inputs (Flask · JavaScript · Docker), in production since 2023 and published for every FoundryVTT user. It implements two full third-party rule systems — <b>Path of War</b> and <b>Spheres of Power/Might</b> — on top of a deep campaign house-rule layer: feat-tax exemptions, mechanical flaws, trainers, an expanded profession sub-system and skill unlocks, each generated to be prerequisite-legal.</p>
-          <div class="stat-line"><span class="chip">Flask</span><span class="chip">JavaScript</span><span class="chip">Docker</span><span class="chip">Since 2023</span></div>
+          <div class="wh"><span class="k">Why</span><p>There was essentially no real Pathfinder 1e character generator — a few very basic ones that did a fraction of the work, and nothing that came close to the rules my table actually plays with (<b>Path of War</b>, <b>Spheres of Power/Might</b>, and years of house rules).</p></div>
+          <div class="wh"><span class="k">How</span><p>Twelve inputs go in; a Python core assembles a complete, <b>rules-legal</b> character, and a containerized Flask service hands FoundryVTT a finished actor — published to the official package registry, in production since 2023.</p></div>
+          <div class="metrics tnum">
+            <div><span class="n">758</span><span class="l">classes &amp; archetypes</span></div>
+            <div><span class="n">8,816</span><span class="l">feats indexed</span></div>
+            <div><span class="n">700+</span><span class="l">python functions</span></div>
+            <div><span class="n">2</span><span class="l">3rd-party systems</span></div>
+            <div><span class="n">3 yrs</span><span class="l">in production</span></div>
+          </div>
+          <div class="stat-line"><span class="chip pkg">Published package</span><span class="chip">Flask</span><span class="chip">Python</span><span class="chip">Docker</span></div>
         </div>
-        <div class="repos">
-          <a class="repo" href="https://foundryvtt.com/packages/pf1e-random-char-generator" target="_blank" rel="noopener"><span>Install on FoundryVTT <span class="kind">↗ package</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder_Char_Creator" target="_blank" rel="noopener"><span>Generator backend <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/FoundryVTT_Random_Pf1e_Char_Generator" target="_blank" rel="noopener"><span>Foundry module <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://gitlab.com/pathfinder_1e_randomized_character_generator/FoundryVTT_Random_Pf1e_Char_Generator/-/wikis/home" target="_blank" rel="noopener"><span>Docs &amp; wiki <span class="kind">↗ gitlab</span></span><span class="arrow">→</span></a>
+
+        <div>
+          <div class="repos">
+            <a class="repo" href="https://foundryvtt.com/packages/pf1e-random-char-generator" target="_blank" rel="noopener"><span>Install on FoundryVTT <span class="kind">↗ package</span></span><span class="arrow">→</span></a>
+            <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder_Char_Creator" target="_blank" rel="noopener"><span>Generator backend <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+            <a class="repo" href="https://github.com/The-Data-is-a-lie/FoundryVTT_Random_Pf1e_Char_Generator" target="_blank" rel="noopener"><span>Foundry module <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+            <a class="repo" href="https://gitlab.com/pathfinder_1e_randomized_character_generator/FoundryVTT_Random_Pf1e_Char_Generator/-/wikis/home" target="_blank" rel="noopener"><span>Docs &amp; wiki <span class="kind">↗ gitlab</span></span><span class="arrow">→</span></a>
+            <a class="repo" href="#pf1e-generator"><span>Read the build notes <span class="kind">↓ expands below</span></span><span class="arrow">→</span></a>
+          </div>
+
+          <figure class="arch">
+            <svg viewBox="0 0 260 186" aria-hidden="true" focusable="false">
+              <g>
+                <rect class="box" x="0.5" y="0.5" width="259" height="34" rx="3"/>
+                <text class="lbl" x="11" y="15">Foundry module</text>
+                <text class="sub" x="11" y="26">JavaScript · in-app UI, 12 inputs</text>
+                <rect class="box" x="0.5" y="50.5" width="259" height="34" rx="3"/>
+                <text class="lbl" x="11" y="65">Flask API</text>
+                <text class="sub" x="11" y="76">Docker · containerized service</text>
+                <rect class="box" x="0.5" y="100.5" width="259" height="34" rx="3"/>
+                <text class="lbl" x="11" y="115">generator core</text>
+                <text class="sub" x="11" y="126">Python · 55+ modules, 700+ functions</text>
+                <rect class="box" x="0.5" y="150.5" width="259" height="34" rx="3"/>
+                <text class="lbl" x="11" y="165">actor JSON</text>
+                <text class="sub" x="11" y="176">a rules-legal, 111-item character sheet</text>
+              </g>
+              <g>
+                <line class="flow" x1="130" y1="35" x2="130" y2="45"/><polygon class="tip" points="130,50 126,44 134,44"/>
+                <line class="flow" x1="130" y1="85" x2="130" y2="95"/><polygon class="tip" points="130,100 126,94 134,94"/>
+                <line class="flow" x1="130" y1="135" x2="130" y2="145"/><polygon class="tip" points="130,150 126,144 134,144"/>
+              </g>
+            </svg>
+            <figcaption>Flow: Foundry module → Flask API → generator core → actor JSON.</figcaption>
+          </figure>
+        </div>
+
+        <div class="sample">
+          <button class="expander" id="sample-btn" type="button" aria-expanded="false" aria-controls="sample-out">
+            <span>
+              <span class="ex-lab">✦ Show a character it made</span>
+              <small>a real level-14 wizard the tool produced · 111 items · saved output, no backend needed</small>
+            </span>
+            <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="sample-out" id="sample-out" aria-hidden="true"><div class="sheet" id="sample-sheet"></div></div>
         </div>
       </article>
 
       <article class="card r">
         <div class="head">
           <h3>FoundryVTT PF1e tooling</h3>
-          <p>A suite of small Foundry VTT modules and macros that smooth out Pathfinder 1e at the table — grouped one-click buffs, handy utility macros, multi-token buff distribution, and letting one character take multiple initiative slots. The newest scans a character and wires per-strike <b>conditional modifiers</b> — Path of War maneuvers, sphere talents and spells — onto every weapon they carry, with a per-weapon review pop-up, so nobody has to import a bulky palette actor or drag effects by hand.</p>
+          <div class="wh"><span class="k">Why</span><p>Pathfinder 1e asks you to track an enormous amount, and a session runs long. Most of that tracking is bookkeeping, not playing — so I cut the boring parts out and gave the table back its attention.</p></div>
+          <div class="wh"><span class="k">How</span><p>Five small Foundry VTT modules and macros, each killing off one repetitive chore at the table — the newest wires per-strike <b>conditional modifiers</b> onto every weapon a character carries, so nobody drags effects by hand.</p></div>
           <div class="stat-line"><span class="chip">Foundry module</span><span class="chip">JavaScript</span><span class="chip">5 tools</span></div>
         </div>
         <div class="repos">
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/pf1-buff-bundles" target="_blank" rel="noopener"><span>pf1-buff-bundles <span class="kind">↗ grouped buffs</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry_VTT_Pf_1e_Handy_Macros" target="_blank" rel="noopener"><span>Handy PF1e macros <span class="kind">↗ utilities</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry-VTT-Multi-Buff-Distributer-Macro" target="_blank" rel="noopener"><span>Multi-buff distributor <span class="kind">↗ macro</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/multiple-initiatives" target="_blank" rel="noopener"><span>multiple-initiatives <span class="kind">↗ module</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/pf1-conditional-applier" target="_blank" rel="noopener"><span>Conditional applier <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/pf1-buff-bundles" target="_blank" rel="noopener"><span>pf1-buff-bundles <span class="kind">↗ one-click buff groups</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry_VTT_Pf_1e_Handy_Macros" target="_blank" rel="noopener"><span>Handy PF1e macros <span class="kind">↗ table shortcuts</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry-VTT-Multi-Buff-Distributer-Macro" target="_blank" rel="noopener"><span>Multi-buff distributor <span class="kind">↗ buff the whole party at once</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/multiple-initiatives" target="_blank" rel="noopener"><span>multiple-initiatives <span class="kind">↗ one PC, several turns</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/pf1-conditional-applier" target="_blank" rel="noopener"><span>Conditional applier <span class="kind">↗ auto-wires per-strike mods</span></span><span class="arrow">→</span></a>
         </div>
       </article>
 
@@ -404,6 +515,7 @@
       </div>
     </div>
   </section>
+
   <section id="pf1e-generator">
     <div class="sec-head r"><h2>Build notes — PF1e generator</h2><span class="count">the long version</span></div>
     <button class="expander r" id="notes-btn" type="button" aria-expanded="false" aria-controls="notes-body">
@@ -626,6 +738,63 @@
     });
     if(location.hash==="#pf1e-generator") setNotes(true,true);   /* deep link arrives expanded */
     addEventListener("resize",function(){ if(nOpen&&nbody.style.maxHeight!=="none") nbody.style.maxHeight="none"; });
+  }
+
+  /* ---------- sample characters ----------
+     Real saved output from the generator, distilled by hand from the module's
+     export_to_foundryVTT.json. Static on purpose: the Flask service isn't hosted,
+     so this must never read as a live backend. Add entries to cycle more. */
+  var SAMPLES=[{
+    who:"Wizard 14",
+    sys:"core PF1e",
+    meta:"Lawful Evil · age 37 · 67 hp · tall, bald, green-eyed, spectacled",
+    abil:[["str",21],["dex",16],["con",16],["int",26],["wis",21],["cha",16]],
+    rows:[
+      ["on the sheet","<b>111</b> items — 83 spells, 20 feats, 5 pieces of equipment, a weapon and a spellbook"],
+      ["spells","83 across eight levels, 15 cantrips up to 12 at 7th — Dream Reality, Greater Contagion, Mass Suggestion, Janni's Jaunt, Leashed Shackles, Telepathy"],
+      ["feats","Persistent Spell, Improved Lightning Reflexes, Lightning Reflexes, Toughness, Great Fortitude, Diehard, Endurance, Dodge"],
+      ["traits","Undead Slayer (Pharasma), Devotee of Kalistrade (Druma), Sacred Touch, Easy Way or the Hard Way, Reactionary, Precise Treatment"],
+      ["skills","22 ranked — Survival 14, K. engineering 12, Climb 9, Escape Artist 9, Profession 9, Handle Animal 7, K. dungeoneering 7"],
+      ["gear","Longsword · Do-Maru · Cloak of Resistance +3 · Windwave Kilt · Witching Gown · Snakeskin Tunic"],
+      ["languages","Draconic, Grippli, Sphinx, Celestial, Aklo, Aquan, Gnome, Undercommon"],
+      ["house rules","Water-Touched · Spell Intuition · Selective Health"],
+      ["backstory","Adopted into a poor family; one older brother, two older sisters. Chuckles, covers his ears, pats his pockets."]
+    ]
+  }];
+
+  var sbtn=document.getElementById("sample-btn"), sout=document.getElementById("sample-out"), ssheet=document.getElementById("sample-sheet"), si=0;
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function renderSample(i){
+    var c=SAMPLES[i], h="";
+    h+='<div class="sheet-top"><span class="who">'+esc(c.who)+'</span><span class="sys">'+esc(c.sys)+'</span><span class="meta">'+esc(c.meta)+'</span></div>';
+    h+='<div class="abils tnum">';
+    c.abil.forEach(function(a){ h+='<div><span class="k">'+a[0]+'</span><span class="v">'+a[1]+'</span></div>'; });
+    h+='</div>';
+    c.rows.forEach(function(r){ h+='<div class="srow"><span class="k">'+esc(r[0])+'</span><span class="v">'+r[1]+'</span></div>'; });
+    h+='<p class="sample-note">Saved output from the real generator, trimmed to fit — the tool itself runs inside FoundryVTT, so there\'s no live backend behind this button. Every value above came out of one generated sheet.</p>';
+    ssheet.innerHTML=h;
+  }
+  function sampleLabel(open){
+    if(!open) return "✦ Show a character it made";
+    return SAMPLES.length>1 ? "↻ Roll another" : "✦ Hide the character";
+  }
+  if(sbtn){
+    sbtn.addEventListener("click",function(){
+      var open=sout.classList.contains("open");
+      if(!open){                                  /* first click: render + expand */
+        renderSample(si);
+        sout.classList.add("open"); sout.setAttribute("aria-hidden","false"); sbtn.setAttribute("aria-expanded","true");
+      } else if(SAMPLES.length>1){                /* cycle to the next saved character */
+        si=(si+1)%SAMPLES.length;
+        if(reduce){ renderSample(si); }
+        else { sout.classList.add("swap"); setTimeout(function(){ renderSample(si); sout.classList.remove("swap"); },200); }
+        return;
+      } else {                                    /* only one sample: collapse again */
+        sout.classList.remove("open"); sout.setAttribute("aria-hidden","true"); sbtn.setAttribute("aria-expanded","false");
+      }
+      /* only the label span — writing to the button itself would wipe the chevron and sub-line */
+      sbtn.querySelector(".ex-lab").textContent=sampleLabel(sout.classList.contains("open"));
+    });
   }
 
   /* ---------- scroll reveal / glow / constellation ---------- */
