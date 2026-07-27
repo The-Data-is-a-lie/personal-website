@@ -324,7 +324,7 @@
   <div class="theme-wrap">
     <button class="theme-btn" id="theme-btn" aria-haspopup="true" aria-expanded="false"><span class="sw"></span><span id="theme-cur">Arcane</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <div class="menu" id="theme-menu" role="menu" aria-label="Theme"><div class="mh">Theme — night by default</div></div>
+    <div class="menu" id="theme-menu" role="menu" aria-label="Theme"><div class="mh">Theme · night by default</div></div>
   </div>
 </div>
 
@@ -333,9 +333,9 @@
   <div class="wrap">
     <div class="hero-eyebrow r"><span class="dot"></span><span class="eyebrow">Data analyst by day · builder by night</span></div>
     <h1 class="name r">Daniel <span class="lastname">Grkinich</span></h1>
-    <p class="tagline r">I build tools and systems — <span class="soft">lately TTRPG tooling for Pathfinder&nbsp;&amp;&nbsp;FoundryVTT.</span></p>
-    <p class="about r" style="margin-bottom:14px">A <b>data &amp; automation analyst</b> in healthcare economics — currently a Senior Healthcare Economic Consultant at <b>UnitedHealthcare</b> (AI-governance + Python automation).</p>
-    <p class="about r">Off the clock I build software for fun, mostly for tabletop RPGs. Every project here started the same way: I went looking for the tool, nothing that existed did the job, so I wrote it myself.</p>
+    <p class="tagline r">I like to automate the boring things in my life. <span class="soft">Lately that means TTRPG tooling for Pathfinder&nbsp;&amp;&nbsp;FoundryVTT.</span></p>
+    <p class="about r" style="margin-bottom:14px">Hello, I'm a Senior Healthcare Economic Consultant at <b>UnitedHealthcare</b>, doing AI governance and Python automation in healthcare economics.</p>
+    <p class="about r">Every project here started the same way: I went looking for the tool, nothing that existed did the job, so I wrote it myself.</p>
     <div class="links r">
       <a class="link primary" href="https://github.com/The-Data-is-a-lie" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 8.4 22.9c.6.1.8-.25.8-.56v-2c-3.3.72-4-1.4-4-1.4-.55-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.73.08-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .31.2.67.81.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
@@ -361,8 +361,8 @@
       <article class="card r">
         <div class="head">
           <h3>Pathfinder Character Sheet</h3>
-          <div class="wh"><span class="k">Why</span><p>Playing Pathfinder shouldn't cost anything before you roll a die. I wanted a sheet anyone could open and share with their friends — no account, no subscription, nothing to install.</p></div>
-          <div class="wh"><span class="k">How</span><p>A browser-based Pathfinder 1e character sheet in vanilla HTML/CSS/JS — no build step, runs entirely client-side, saves locally. The one project here you can open as a full app and click around in right now.</p></div>
+          <div class="wh"><span class="k">Why</span><p>Playing Pathfinder shouldn't cost you anything before you roll a die. I wanted a sheet that anyone could open in a browser and send to a friend, because every other option I found wanted an account first.</p></div>
+          <div class="wh"><span class="k">How</span><p>It is a character sheet built with plain HTML, CSS and JavaScript. Nothing gets installed and nothing gets sent to a server. It simply runs inside your browser and saves to your own machine, which is why it is the one project here you can open and click around in right now.</p></div>
           <div class="stat-line"><span class="chip live">Live demo</span><span class="chip">JavaScript</span><span class="chip">Static · no backend</span></div>
         </div>
         <div class="repos">
@@ -375,13 +375,13 @@
         <div class="head">
           <span class="eyebrow card-eyebrow">✦ the deep one · three years in production</span>
           <h3>PF1e Character Generator</h3>
-          <div class="wh"><span class="k">Why</span><p>There was essentially no real Pathfinder 1e character generator — a few very basic ones that did a fraction of the work, and nothing that came close to the rules my table actually plays with (<b>Path of War</b>, <b>Spheres of Power/Might</b>, and years of house rules).</p></div>
-          <div class="wh"><span class="k">How</span><p>Twelve inputs go in; a Python core assembles a complete, <b>rules-legal</b> character, and a containerized Flask service hands FoundryVTT a finished actor — published to the official package registry, in production since 2023.</p></div>
+          <div class="wh"><span class="k">Why</span><p>There was no real Pathfinder 1e character generator. A few existed, but they only did a small fraction of the work, and none of them knew the two extra rulebooks my group plays with, <b>Path of War</b> and <b>Spheres of Power/Might</b>, or the house rules we have built up over the years.</p></div>
+          <div class="wh"><span class="k">How</span><p>You answer twelve questions. A Python program then builds the entire character, choosing everything in an order that keeps it <b>legal by the rules</b>, and a small web service hands the finished sheet to FoundryVTT ready to play. It has been published there since 2023.</p></div>
           <div class="stat-line"><span class="chip pkg">Published package</span><span class="chip">Flask</span><span class="chip">Python</span><span class="chip">Docker</span></div>
         </div>
         <div class="repos">
           <a class="repo" href="https://foundryvtt.com/packages/pf1e-random-char-generator" target="_blank" rel="noopener"><span>Install on FoundryVTT <span class="kind">↗ package</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder_Char_Creator" target="_blank" rel="noopener"><span>Generator backend <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder_Char_Creator" target="_blank" rel="noopener"><span>Generator code <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
           <a class="repo" href="https://github.com/The-Data-is-a-lie/FoundryVTT_Random_Pf1e_Char_Generator" target="_blank" rel="noopener"><span>Foundry module <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
           <!-- the appendix sits below the contact block, so this row is its only bridge from the work section -->
           <a class="repo" href="#pf1e-generator"><span>Read the build notes <span class="kind">↓ the whole process</span></span><span class="arrow">→</span></a>
@@ -391,8 +391,8 @@
       <article class="card r">
         <div class="head">
           <h3>FoundryVTT PF1e tooling</h3>
-          <div class="wh"><span class="k">Why</span><p>Pathfinder 1e asks you to track an enormous amount, and a session runs long. Most of that tracking is bookkeeping, not playing — so I cut the boring parts out and gave the table back its attention.</p></div>
-          <div class="wh"><span class="k">How</span><p>Five small Foundry VTT modules and macros, each killing off one repetitive chore at the table — the newest wires per-strike <b>conditional modifiers</b> onto every weapon a character carries, so nobody drags effects by hand.</p></div>
+          <div class="wh"><span class="k">Why</span><p>Pathfinder 1e has so much minutia to keep track of that things which should be quick end up taking several minutes. I wanted to speed that up.</p></div>
+          <div class="wh"><span class="k">How</span><p>Five small FoundryVTT modules and macros, each one killing off a chore. The newest attaches every situational bonus a character has directly to their weapons, which is why nobody at the table has to remember them mid-fight any more.</p></div>
           <div class="stat-line"><span class="chip">Foundry module</span><span class="chip">JavaScript</span><span class="chip">5 tools</span></div>
         </div>
         <div class="repos">
@@ -400,7 +400,7 @@
           <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry_VTT_Pf_1e_Handy_Macros" target="_blank" rel="noopener"><span>Handy PF1e macros <span class="kind">↗ table shortcuts</span></span><span class="arrow">→</span></a>
           <a class="repo" href="https://github.com/The-Data-is-a-lie/Foundry-VTT-Multi-Buff-Distributer-Macro" target="_blank" rel="noopener"><span>Multi-buff distributor <span class="kind">↗ buff the whole party at once</span></span><span class="arrow">→</span></a>
           <a class="repo" href="https://github.com/The-Data-is-a-lie/multiple-initiatives" target="_blank" rel="noopener"><span>multiple-initiatives <span class="kind">↗ one PC, several turns</span></span><span class="arrow">→</span></a>
-          <a class="repo" href="https://github.com/The-Data-is-a-lie/pf1-conditional-applier" target="_blank" rel="noopener"><span>Conditional applier <span class="kind">↗ auto-wires per-strike mods</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/pf1-conditional-applier" target="_blank" rel="noopener"><span>Conditional applier <span class="kind">↗ bonuses attached to weapons</span></span><span class="arrow">→</span></a>
         </div>
       </article>
 
@@ -410,7 +410,7 @@
   <section id="contact">
     <div class="sec-head r"><h2>Get in touch</h2><span class="count">no bots, please</span></div>
     <div class="contact-grid r">
-      <p class="about" style="margin:0 0 6px">Best ways to reach me — email and résumé are hidden from scrapers until you ask for them.</p>
+      <p class="about" style="margin:0 0 6px">My email and my résumé are both here. They stay hidden from scrapers until you ask for them.</p>
       <div class="reveal-row">
         <button class="reveal-btn" id="email-btn2" type="button">✦ Reveal email address</button>
         <span class="revealed" id="email-out" hidden></span>
@@ -481,7 +481,7 @@
   </section>
 
   <section id="pf1e-generator">
-    <div class="sec-head r"><h2>Build notes — PF1e generator</h2><span class="count">the long version</span></div>
+    <div class="sec-head r"><h2>Build notes: PF1e generator</h2><span class="count">the long version</span></div>
 
     <div class="metrics lead tnum r">
       <div><span class="n">758</span><span class="l">classes &amp; archetypes</span></div>
@@ -515,60 +515,57 @@
 
       <div class="took">
         <span class="lab">What it took · what it taught me</span>
-        <p>Roughly <b>three years</b> of spare time to reach a version I was genuinely happy with — self-taught, alongside a full-time job. It ended up being the thing that taught me most of what I now do professionally.</p>
+        <p>It took roughly three years of spare time, self-taught and alongside a full-time job, before I had a version I was actually happy with. It also taught me most of what I now do professionally.</p>
         <div class="took-skills">
           <div><span class="k">Python</span>Learned from scratch for this project. I now use it every day at work.</div>
-          <div><span class="k">Automation</span>Led directly to becoming the automation lead on my team.</div>
-          <div><span class="k">JavaScript</span>From zero — enough to build web pages and adjust FoundryVTT on the fly.</div>
+          <div><span class="k">Automation</span>Got me the automation lead role on my team.</div>
+          <div><span class="k">JavaScript</span>From zero. Enough to build web pages and adjust FoundryVTT on the fly.</div>
           <div><span class="k">Web scraping</span>Thousands of rules entries pulled out of a lot of different sources.</div>
-          <div><span class="k">Optimization</span>It all runs on free tiers, so speed and payload size had to be tuned — untuned, it couldn't serve more than single-digit concurrent users.</div>
-          <div><span class="k">AI</span>Learning to fold it properly into a real workflow rather than using it as a novelty.</div>
+          <div><span class="k">Optimization</span>The whole thing runs on free hosting, which is why it had to be quite fast and quite small. Before I tuned it, it could barely serve a handful of people at once.</div>
+          <div><span class="k">AI</span>Folding it into a real workflow rather than treating it as a toy.</div>
           <div><span class="k">Shipping solo</span>Carrying one large project end to end, and learning whatever it needed along the way.</div>
         </div>
       </div>
 
       <div class="note">
         <h3><span class="num">01</span>Why it exists</h3>
-        <p>There was essentially no real Pathfinder 1e character generator. A few very basic ones existed, but they did a small fraction of the work — roll some numbers, then hand the actual character-building back to you. Nothing produced a finished, playable sheet.</p>
-        <p>And nothing came close to the rules we actually play with. Rolling a character by hand took an evening; I wanted one in seconds. So I went looking for the tool, found nothing that did the job, and wrote it myself.</p>
+        <p>There was no real Pathfinder 1e character generator. A few existed, but they only rolled some numbers for you and then handed the actual character building back, which is the part that takes all the time. Rolling one by hand took an entire evening, and I wanted it done in seconds.</p>
       </div>
 
       <div class="note">
-        <h3><span class="num">02</span>Making every character legal — and worth playing</h3>
-        <p>Randomness is the easy part. The hard part is guaranteeing that <b>every</b> character the generator can possibly produce satisfies every rule in the system, <b>100% of the time</b> — and that it's a character someone would actually want to play rather than statistical garbage. Those are two separate problems, and the second one is harder.</p>
-        <p>Pathfinder 1e is one of the most mechanically complex TTRPG systems in existence, and its options interlock. Feats gate feats — Combat Expertise gates Improved Trip. Class features gate options. Ability scores gate prerequisites. Skills gate unlocks. Maneuvers gate higher-discipline maneuvers. Picking randomly from a flat list produces an illegal sheet almost every time.</p>
-        <p>The consequence is <b>retroactive invalidation</b>: a choice made at level 13 can invalidate one made at level 3, because ability scores, class features and prerequisites all shift underneath earlier picks. So selection can't be greedy. It has to validate the whole build, backtrack out of dead ends, re-check, and still terminate — which means the search has to be bounded rather than left to thrash.</p>
-        <p>And legal isn't sufficient. A sheet can satisfy every prerequisite and still be unplayable — a melee build with no Strength, feats that support nothing the class does. It has to come out <i>coherent</i>: stats that support the feats, feats that support the class.</p>
+        <h3><span class="num">02</span>Making every character legal, and worth playing</h3>
+        <p>Randomness is the easy part. The hard part is making sure every character it can possibly produce follows every rule, every single time, and that the result is someone you would actually want to play rather than a pile of numbers that happens to be legal.</p>
+        <p>Pathfinder 1e is one of the most complicated tabletop systems ever published, mostly because almost every choice depends on another choice. One feat requires a different feat first, your class limits which options exist at all, and your ability scores decide what you qualify for. Picking at random produces an illegal character almost every time.</p>
+        <p>Being legal is not enough on its own. A character can satisfy every requirement in the book and still be miserable to play, like a melee fighter with no Strength. It has to come out <i>coherent</i>.</p>
       </div>
 
       <div class="note">
         <h3><span class="num">03</span>Then: two more rule systems, and our own</h3>
-        <p>Handling base Pathfinder 1e was only the first half. We don't play stock — every character at our table uses two complete third-party systems, <b>Path of War</b> (initiating classes and maneuvers) and <b>Spheres of Power/Might</b> (a talent-based replacement for both casting and combat), on top of a house-rule layer we'd built up over years: feat-tax exemptions, mechanical flaws, trainers, an expanded profession sub-system, skill unlocks.</p>
-        <p>Those additions were, by themselves, <b>considerably more work than supporting the base system</b>. Neither third-party system was designed to coexist with the other, and both replace core subsystems rather than extending them — so the generator has to know which rule wins where: how a Spheres caster's tradition interacts with a Path of War initiator's recovery, which class features get overwritten by a sphere package, how to hold two entirely different resource economies on one sheet.</p>
-        <p>The house rules then change what "legal" even means. Feat-tax exemptions <i>remove</i> edges from the prerequisite graph, flaws trade penalties for extra picks, trainers gate options behind in-world access. Legality stops being a fixed property of the rulebook and becomes a function of the configuration you generated with. Keeping that layer separable is what makes the tool usable by anyone who isn't at my table.</p>
-        <p>Each system also brought its own data corpus. The indexed pools the generator selects from now run to <b>8,816</b> feats, <b>6,035</b> items and <b>758</b> class-and-archetype entries — every one of which had to be machine-readable in the same shape before any of it could be validated.</p>
+        <p>Handling base Pathfinder 1e was only the first half. We do not play stock. Every character at our table also uses two entire third-party rulebooks, <b>Path of War</b> and <b>Spheres of Power/Might</b>, and both of them replace big pieces of the core game rather than simply adding to it. We have our own house rules on top of that, built up over years of play.</p>
+        <p>Supporting those two was more work than supporting the base game had been. Neither was written with the other in mind, so the generator constantly has to decide which book wins, and it has to hold two completely different ways of spending a character's resources on one sheet.</p>
+        <p>Each book also brought its own pile of data. The pools the generator picks from now run to 8,816 feats, 6,035 items and 758 classes and archetypes. All of it had to be readable in the same format first.</p>
       </div>
 
       <div class="note">
         <h3><span class="num">04</span>The front end I hadn't planned for</h3>
-        <p>Finishing the backend didn't finish the project. I had a service that could produce a correct character and nowhere to show it — and handing someone a JSON blob isn't a tool. After learning Python from scratch and building the generator core, I still needed somewhere the output could actually live.</p>
-        <p>So the front end became <b>FoundryVTT</b>, the virtual tabletop my friends and I already played in. That meant learning <b>JavaScript from scratch</b>, and learning the internals of a large application I hadn't written: its data model, its hooks, how actors and items are structured, how to write back a fully populated sheet without corrupting it. The module collects twelve inputs in-app, calls the Flask service, and writes back a finished actor — items, spells, feats and all.</p>
+        <p>Finishing the program did not finish the project. I could produce a correct character and had nowhere to put it, and handing somebody a file full of raw data is not a tool.</p>
+        <p>So the front end became FoundryVTT, the virtual tabletop my friends and I already played in. That meant learning JavaScript from scratch, as well as learning my way around a very large application somebody else had written. It asks you twelve questions and writes the finished character straight into the game.</p>
 
         <figure class="arch">
           <svg viewBox="0 0 260 186" aria-hidden="true" focusable="false">
             <g>
               <rect class="box" x="0.5" y="0.5" width="259" height="34" rx="3"/>
               <text class="lbl" x="11" y="15">Foundry module</text>
-              <text class="sub" x="11" y="26">JavaScript · in-app UI, 12 inputs</text>
+              <text class="sub" x="11" y="26">JavaScript · asks you 12 questions</text>
               <rect class="box" x="0.5" y="50.5" width="259" height="34" rx="3"/>
-              <text class="lbl" x="11" y="65">Flask API</text>
-              <text class="sub" x="11" y="76">Docker · containerized service</text>
+              <text class="lbl" x="11" y="65">Flask web service</text>
+              <text class="sub" x="11" y="76">Docker · passes them along</text>
               <rect class="box" x="0.5" y="100.5" width="259" height="34" rx="3"/>
-              <text class="lbl" x="11" y="115">generator core</text>
-              <text class="sub" x="11" y="126">Python · 55+ modules, 700+ functions</text>
+              <text class="lbl" x="11" y="115">Generator</text>
+              <text class="sub" x="11" y="126">Python · picks every choice</text>
               <rect class="box" x="0.5" y="150.5" width="259" height="34" rx="3"/>
-              <text class="lbl" x="11" y="165">actor JSON</text>
-              <text class="sub" x="11" y="176">a rules-legal, 111-item character sheet</text>
+              <text class="lbl" x="11" y="165">Finished character</text>
+              <text class="sub" x="11" y="176">a full sheet, 111 items, ready to play</text>
             </g>
             <g>
               <line class="flow" x1="130" y1="35" x2="130" y2="45"/><polygon class="tip" points="130,50 126,44 134,44"/>
@@ -576,17 +573,17 @@
               <line class="flow" x1="130" y1="135" x2="130" y2="145"/><polygon class="tip" points="130,150 126,144 134,144"/>
             </g>
           </svg>
-          <figcaption>Flow: Foundry module → Flask API → generator core → actor JSON.</figcaption>
+          <figcaption>Flow: Foundry module → web service → generator → finished character.</figcaption>
         </figure>
 
-        <p>It's published on the official FoundryVTT package registry and has been in production since 2023. That's the part I'm actually proud of: not that it works on my machine, but that it's installable by strangers and has been in continuous use for three years, which is a very different bar.</p>
+        <p>It is published on the official FoundryVTT package registry, and strangers have been installing it for three years. That is the part I am actually proud of.</p>
       </div>
 
       <div class="note">
         <h3><span class="num">05</span>What I'd do differently</h3>
-        <p>At the start I didn't know what I was doing. I began by copying a GitHub repo and iterating on it, and every basic change took far longer than it should have because I was working inside someone else's structure without really understanding it. Eventually I got fed up and rebuilt the whole thing from scratch — which was the right call, just much later than it should have come.</p>
-        <p>So the main thing I'd change is <b>scoping</b>. I'd map the project out before writing anything: an explicit diagram of what it needed to do, what data it needed, and what the pieces were. Almost all of the rework traced back to not having that picture and figuring it out as I went instead.</p>
-        <p>Smaller ones, all still true: model the prerequisite graph explicitly from day one rather than letting validation logic scatter across every module that needs it; treat the data pipeline as the foundation it turned out to be instead of a chore; and write property-based tests over legality — "no generated character ever violates a prerequisite" is exactly the kind of invariant that deserves a fuzzer rather than a handful of examples.</p>
+        <p>At the start I did not know what I was doing. I began by copying somebody else's project and changing it piece by piece, and every basic change took far longer than it should have, because I was working inside a structure I did not understand. Eventually I got fed up and rebuilt the whole thing from scratch. That was the right call, although it came much later than it should have.</p>
+        <p>So the main thing I would change is planning. I would map the whole project out first, including what it needed to do and what data it needed. Almost all of the rework traced back to not having that picture.</p>
+        <p>The smaller ones are still true. I would keep the rules about what requires what in one place from day one, rather than letting that logic spread into every file. I would also treat the data as the foundation it became. And I would write a test that generates thousands of characters and checks that none of them break a rule.</p>
       </div>
 
       <div class="repos">
