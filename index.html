@@ -213,7 +213,8 @@
   .revealed{ font-family:var(--mono); font-size:.85rem; }
   .revealed a{ color:var(--accent); }
   .resume{ margin-top:8px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; max-height:0; opacity:0; transition:max-height .5s var(--ease), opacity .4s ease; }
-  .resume.open{ max-height:3600px; opacity:1; }
+  /* no max-height here on purpose — disclosure() measures it, so adding roles can't clip it */
+  .resume.open{ opacity:1; }
   .resume-inner{ padding:clamp(24px,3.5vw,40px); }
   .r-name{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; font-size:1.7rem; margin:0 0 4px; }
   .r-contact{ font-family:var(--mono); font-size:.78rem; color:var(--muted); margin-bottom:26px; }
@@ -754,46 +755,83 @@ var SiteCore=(function(){
     document.getElementById("p-keep").addEventListener("click",function(){ try{localStorage.setItem("site.theme","arcane");}catch(e){} pr.classList.remove("show"); });
   }
 
+  /* ---------- disclosure: one collapse implementation for every panel ----------
+     Height is measured, never capped. The notes run ~2000px on desktop and past
+     4000px on a phone, and the résumé grows every time a role is added, so a
+     hardcoded max-height clips silently once the content outgrows it.
+     opts: {scrollOnToggle, scrollAnchor, label, onFirstOpen}. Returns a handle so
+     callers with their own triggers (deep links, intercepted anchors) can drive it.
+     scrollOnToggle is separate from the handle's scroll: clicking the notes button
+     should not scroll, because you are already looking at it, but arriving from a
+     card link should. */
+  function disclosure(button, panel, opts){
+    opts=opts||{};
+    var isOpen=false, releaseT=null, everOpened=false;
+    var anchor=opts.scrollAnchor||button;
+
+    function relabel(){ if(opts.label) button.textContent=opts.label(isOpen); }
+    function scrollToAnchor(){ anchor.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"}); }
+
+    function set(next, scroll){
+      isOpen=next; clearTimeout(releaseT);
+      /* content must be final before scrollHeight is read, or the panel is
+         measured at the wrong height and clips by exactly the injected amount */
+      if(isOpen && !everOpened){ everOpened=true; if(opts.onFirstOpen) opts.onFirstOpen(); }
+
+      button.setAttribute("aria-expanded",String(isOpen));
+      panel.setAttribute("aria-hidden",String(!isOpen));
+      panel.classList.toggle("open",isOpen);
+
+      if(reduce){ panel.style.maxHeight=isOpen?"none":"0px"; }
+      else if(isOpen){
+        panel.style.maxHeight=panel.scrollHeight+"px";
+        /* release the cap once the transition ends so it reflows on resize/theme change */
+        releaseT=setTimeout(function(){ if(isOpen) panel.style.maxHeight="none"; },620);
+      } else {
+        panel.style.maxHeight=panel.scrollHeight+"px";   /* from a concrete height, else no transition */
+        void panel.offsetHeight;
+        panel.style.maxHeight="0px";
+      }
+
+      relabel();
+      if(isOpen && scroll) setTimeout(scrollToAnchor,120);
+    }
+
+    button.addEventListener("click",function(){ set(!isOpen,!!opts.scrollOnToggle); });
+    addEventListener("resize",function(){ if(isOpen&&panel.style.maxHeight!=="none") panel.style.maxHeight="none"; });
+    relabel();
+
+    return {
+      open:function(scroll){ var s=scroll!==false; if(isOpen){ if(s) scrollToAnchor(); } else set(true,s); },
+      close:function(){ if(isOpen) set(false,false); },
+      toggle:function(){ set(!isOpen,!!opts.scrollOnToggle); },
+      isOpen:function(){ return isOpen; }
+    };
+  }
+
   /* ---------- email + résumé ---------- */
   var addr=["daniel","grkinich"].join("")+"@"+["gmail","com"].join(".");
   var eb=document.getElementById("email-btn"), el=document.getElementById("email-label");
   eb.addEventListener("click",function(){ if(el.textContent===addr){ location.href="mailto:"+addr; return; } el.textContent=addr; eb.classList.add("primary"); });
   document.getElementById("email-btn2").addEventListener("click",function(){ var out=document.getElementById("email-out"); out.hidden=false; out.innerHTML='<a href="mailto:'+addr+'">'+addr+'</a>'; this.textContent="✦ Email revealed ↓"; this.disabled=true; this.style.opacity=.6; });
   var rb=document.getElementById("resume-btn"), rp=document.getElementById("resume");
-  rb.addEventListener("click",function(){ var open=rp.classList.toggle("open"); rp.setAttribute("aria-hidden",String(!open)); rb.textContent=open?"✦ Hide résumé":"✦ View résumé";
-    if(open){ document.getElementById("r-contact").innerHTML='<a href="mailto:'+addr+'">'+addr+'</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/daniel-grkinich-a93847199/" target="_blank" rel="noopener">linkedin.com/in/daniel-grkinich</a>'; setTimeout(function(){ rp.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"}); },120); } });
+  if(rb&&rp) disclosure(rb,rp,{
+    scrollOnToggle:true, scrollAnchor:rp,
+    label:function(open){ return open?"✦ Hide résumé":"✦ View résumé"; },
+    onFirstOpen:function(){
+      document.getElementById("r-contact").innerHTML='<a href="mailto:'+addr+'">'+addr+'</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/daniel-grkinich-a93847199/" target="_blank" rel="noopener">linkedin.com/in/daniel-grkinich</a>';
+    }
+  });
 
-  /* ---------- build-notes appendix (collapsed by default) ----------
-     Height is measured rather than capped: the notes run ~2000px on desktop and well past
-     4000px on a phone, so any hardcoded max-height would clip them. */
+  /* ---------- build-notes appendix (collapsed by default) ---------- */
   var nbtn=document.getElementById("notes-btn"), nbody=document.getElementById("notes-body");
   if(nbtn&&nbody){
-    var nOpen=false, nT=null;
-    function toNotes(){ nbtn.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"}); }
-    function setNotes(open,scroll){
-      nOpen=open; clearTimeout(nT);
-      nbtn.setAttribute("aria-expanded",String(open));
-      nbody.setAttribute("aria-hidden",String(!open));
-      nbody.classList.toggle("open",open);
-      if(reduce){ nbody.style.maxHeight=open?"none":"0px"; }
-      else if(open){
-        nbody.style.maxHeight=nbody.scrollHeight+"px";
-        /* release the cap once the transition is done so it can reflow on resize/theme change */
-        nT=setTimeout(function(){ if(nOpen) nbody.style.maxHeight="none"; },620);
-      } else {
-        nbody.style.maxHeight=nbody.scrollHeight+"px";   /* from a concrete height, else no transition */
-        void nbody.offsetHeight;
-        nbody.style.maxHeight="0px";
-      }
-      if(open&&scroll) setTimeout(toNotes,120);
-    }
-    nbtn.addEventListener("click",function(){ setNotes(!nOpen,false); });
+    var notes=disclosure(nbtn,nbody);
     /* the card link has to open the panel — otherwise it jumps to a heading with nothing under it */
     Array.prototype.forEach.call(document.querySelectorAll('a[href="#pf1e-generator"]'),function(a){
-      a.addEventListener("click",function(e){ e.preventDefault(); if(nOpen) toNotes(); else setNotes(true,true); });
+      a.addEventListener("click",function(e){ e.preventDefault(); notes.open(); });
     });
-    if(location.hash==="#pf1e-generator") setNotes(true,true);   /* deep link arrives expanded */
-    addEventListener("resize",function(){ if(nOpen&&nbody.style.maxHeight!=="none") nbody.style.maxHeight="none"; });
+    if(location.hash==="#pf1e-generator") notes.open();   /* deep link arrives expanded */
   }
 
   /* ---------- scroll reveal / glow / constellation ---------- */
