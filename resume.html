@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daniel Grkinich — Résumé</title>
+<meta name="description" content="Résumé — Daniel Grkinich, Senior Healthcare Economic Consultant. Python automation, AI governance, healthcare economics.">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 91,28 91,72 50,95 9,72 9,28' fill='%2312162A' stroke='%23E7B24C' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  /* ============================================================
+     Deliberately self-contained: no shared stylesheet, no theme
+     engine, no build. The values below are copied from the site's
+     default "arcane" theme rather than derived, because this page
+     derives nothing — see docs/adr/0001-single-file-site.md.
+     They are the exact output of SiteCore.deriveTokens(arcane), so
+     the page matches index.html for anyone who has not switched
+     themes, which is essentially every first-time visitor.
+     Measured: ink/bg 15.65:1, muted/bg 11.09:1, faint/bg 7.49:1,
+     accent/bg 10.09:1, accent-ink/accent 10.17:1 — all clear AA.
+     Print overrides everything below to black on white.
+     ============================================================ */
+  :root {
+    --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Code","Cascadia Mono",Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
+    --bg:#0A0C16; --ink:#ECE6D6; --accent:#E7B24C;
+    --muted:#c8c3b7; --faint:#a4a099; --line:#303137; --accent-ink:#090b13;
+    --radius:5px;
+    --step-2:.75rem; --step-3:.8rem; --step-4:.92rem;
+  }
+  *{ box-sizing:border-box; }
+  html{ background:var(--bg); }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+        font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; }
+  ::selection{ background:var(--accent); color:var(--accent-ink); }
+
+  .sheet{ max-width:820px; margin:0 auto; padding:clamp(24px,4vw,52px) clamp(20px,5vw,56px) 72px; }
+
+  /* back to the site — removed in print, where it means nothing */
+  .back{ display:inline-flex; align-items:center; gap:8px; font-family:var(--mono);
+         font-size:var(--step-2); color:var(--faint); text-decoration:none;
+         padding:6px 0; margin-bottom:22px; transition:color .2s; }
+  .back:hover{ color:var(--accent); }
+
+  .r-name{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em;
+           font-size:1.9rem; margin:0 0 4px; }
+  .r-contact{ font-family:var(--mono); font-size:var(--step-3); color:var(--muted);
+              margin:0 0 6px; word-break:break-word; }
+  .r-contact a{ color:var(--accent); }
+  .r-title{ font-family:var(--mono); font-size:var(--step-3); color:var(--faint);
+            margin:0 0 4px; letter-spacing:.02em; }
+
+  .r-sec{ margin-top:26px; }
+  .r-sec > .eyebrow{ display:block; font-family:var(--mono); font-size:var(--step-2);
+                     letter-spacing:.16em; text-transform:uppercase; color:var(--accent);
+                     padding-bottom:8px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+
+  .r-job{ margin-bottom:18px; }
+  .r-job .top{ display:flex; justify-content:space-between; gap:12px;
+               align-items:baseline; flex-wrap:wrap; }
+  .r-job .org{ font-weight:600; }
+  .r-job .when{ font-family:var(--mono); font-size:var(--step-2); color:var(--faint); }
+  .r-job .role{ color:var(--accent); font-size:var(--step-4); margin:2px 0 8px; }
+  .r-job ul{ margin:0; padding-left:1.1em; color:var(--muted); font-size:var(--step-4); }
+  .r-job li{ margin:4px 0; }
+
+  .edu-row{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+            font-size:var(--step-4); }
+  .edu-row .when{ font-family:var(--mono); font-size:var(--step-2); color:var(--faint); }
+
+  .r-skills div{ margin:6px 0; font-size:var(--step-4); }
+  .r-skills .k{ display:inline-block; min-width:132px; font-family:var(--mono);
+                font-size:var(--step-2); text-transform:uppercase; letter-spacing:.1em;
+                color:var(--accent); }
+
+  .tnum{ font-variant-numeric:tabular-nums; }
+
+  /* ===== print — the reason this page exists as a page ===== */
+  @page{ margin:1.5cm; }
+  @media print{
+    html,body{ background:#fff; color:#000; font-size:10.5pt; line-height:1.45; }
+    .sheet{ max-width:none; margin:0; padding:0; }
+    .back{ display:none; }                      /* meaningless on paper */
+    .r-name{ font-size:20pt; }
+    .r-job .role,.r-sec > .eyebrow,.r-contact,.r-contact a{ color:#000; }
+    .r-job ul,.r-skills div,.edu-row{ color:#000; }
+    .r-job .when,.edu-row .when,.r-title{ color:#333; }
+    .r-sec > .eyebrow{ border-bottom:1px solid #999; }
+    .r-skills .k{ color:#000; }
+    /* never split a role across a page boundary */
+    .r-job,.edu-row,.r-skills div{ break-inside:avoid; page-break-inside:avoid; }
+    .r-sec{ break-inside:auto; margin-top:16px; }
+    .r-sec > .eyebrow{ break-after:avoid; page-break-after:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<main class="sheet">
+  <a class="back" href="index.html">← Daniel Grkinich</a>
+
+  <p class="r-name">Daniel Grkinich</p>
+  <p class="r-title">Senior Healthcare Economic Consultant · Python automation &amp; AI governance</p>
+  <p class="r-contact"><a href="mailto:danielgrkinich@gmail.com">danielgrkinich@gmail.com</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/daniel-grkinich-a93847199/" target="_blank" rel="noopener">linkedin.com/in/daniel-grkinich</a></p>
+
+  <div class="r-sec">
+    <span class="eyebrow">Experience</span>
+    <div class="r-job">
+      <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Mar 2026 — Present</span></div>
+      <div class="role">Senior Healthcare Economic Consultant</div>
+      <ul>
+        <li>Technical lead for a newly-formed AI Governance team; designed and shipped an LLM-based agent (Python, LLM APIs, tool-calling orchestration) that generates the project tickets a team of PMs log their hours against, cutting the hours they spend on that intake by an estimated 80%.</li>
+        <li>Automated the creation and QC of recurring leadership reports in Python and Snowflake, replacing manual builds and including reports delivered directly to the C-suite.</li>
+      </ul>
+    </div>
+    <div class="r-job">
+      <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Oct 2024 — Mar 2026</span></div>
+      <div class="role">Healthcare Economic Consultant</div>
+      <ul>
+        <li>Led a small team to automate a recurring quarterly process end-to-end in Python — from a 5-person to a 1-person effort, saving ~24 work-months per year.</li>
+        <li>Supported reporting &amp; compliance for a value-based-care program spanning <span class="tnum">$20B+</span> in annual spend (<span class="tnum">$1B+</span> saved) across <span class="tnum">800+</span> hospital systems.</li>
+        <li>Built value-based-care metrics from claims-level data (readmission ratio, inpatient LOS, ER-to-inpatient escalation) to quantify medical-cost savings.</li>
+        <li>Designed and led monthly Python automation training; onboarded and standardized practices across new analysts.</li>
+      </ul>
+    </div>
+    <div class="r-job">
+      <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Apr 2022 — Oct 2024</span></div>
+      <div class="role">Senior Healthcare Economic Analyst</div>
+      <ul>
+        <li>Built SAS and Unix data pipelines over claims datasets exceeding <span class="tnum">100M</span> rows (inpatient, facility, financial, outpatient/ER).</li>
+        <li>Developed a scikit-learn classifier to flag the top 5% most expensive events, improving F1 by 10%+ over the prior model.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="r-sec">
+    <span class="eyebrow">Notable project</span>
+    <div class="r-job">
+      <div class="top"><span class="org">Full-Stack / Automation Engineering</span><span class="when">Oct 2023 — Present</span></div>
+      <div class="role">Personal project</div>
+      <ul><li>Independently built and maintain a production open-source Pathfinder 1e character generator — <span class="tnum">55+</span> automation modules / <span class="tnum">700+</span> Python functions that assemble a complete, rules-legal character from 12 inputs, including two full third-party rule systems (Path of War, Spheres of Power/Might) and a campaign house-rule layer — shipped as a containerized Flask service (Docker, CI/CD), in production since 2023 and published to all FoundryVTT users.</li></ul>
+    </div>
+  </div>
+
+  <div class="r-sec">
+    <span class="eyebrow">Education</span>
+    <div class="edu-row"><span><b>M.S. Economics</b> — Cal State University, Fullerton</span><span class="when">2020 — 2022</span></div>
+    <div class="edu-row" style="margin-top:8px"><span><b>B.S. Economics</b> — University of California, Irvine</span><span class="when">2017 — 2020</span></div>
+  </div>
+
+  <div class="r-sec r-skills">
+    <span class="eyebrow">Skills</span>
+    <div><span class="k">Programming</span>Python · SQL · SAS · JavaScript · Flask · Snowflake · Unix · Git · Docker · OOP · AI Agents · LLMs · Prompt Engineering · Eval &amp; Guardrails</div>
+    <div><span class="k">Data &amp; BI</span>Advanced Excel · Visual Basic · Tableau · Power BI · Automation</div>
+    <div><span class="k">Healthcare</span>Inpatient Utilization · DRG Groupers · ICD-10 · Capitation &amp; Risk Delegation</div>
+  </div>
+</main>
+
+</body>
+</html>
