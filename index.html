@@ -91,7 +91,6 @@
   h1.name{ font-family:var(--sans); font-weight:800; letter-spacing:-.035em; font-size:var(--hero-size); line-height:.92; margin:0 0 26px; text-wrap:balance; }
   h1.name .lastname{ color:var(--accent); }
   .tagline{ font-size:clamp(1.2rem,2.2vw,1.6rem); line-height:1.38; max-width:32ch; margin:0 0 20px; text-wrap:balance; }
-  .tagline .soft{ color:var(--muted); }
   .about{ color:var(--muted); max-width:60ch; font-size:1.03rem; margin:0 0 34px; }
   .about b{ color:var(--ink); font-weight:600; }
   .links{ display:flex; flex-wrap:wrap; gap:10px; }
@@ -179,10 +178,14 @@
   .expander small{ display:block; font-family:var(--mono); font-size:.68rem; color:var(--faint); margin-top:5px; line-height:1.45; }
   .expander .ex-chev{ flex:0 0 auto; width:20px; height:20px; color:var(--accent); transition:transform .3s var(--ease); }
   .expander[aria-expanded="true"] .ex-chev{ transform:rotate(180deg); }
+  /* same banner treatment on an <a>. It leaves the page rather than expanding, so it gets an
+     outbound arrow instead of a chevron — same weight, different promise. */
+  .expander .ex-go{ flex:0 0 auto; width:19px; height:19px; color:var(--accent); transition:transform .3s var(--ease); }
+  .expander:hover .ex-go{ transform:translate(3px,-3px); }
   /* max-height is driven from JS (measured), never a hardcoded cap — this block is too tall to guess */
   .notes-wrap{ overflow:hidden; max-height:0; opacity:0; transition:max-height .55s var(--ease), opacity .4s ease; }
   .notes-wrap.open{ opacity:1; }
-  @media (prefers-reduced-motion:reduce){ .expander,.expander .ex-chev,.notes-wrap{ transition:none; } }
+  @media (prefers-reduced-motion:reduce){ .expander,.expander .ex-chev,.expander .ex-go,.notes-wrap{ transition:none; } }
   .notes{ display:grid; gap:26px; padding-top:28px; }
   .note h3{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; font-size:1.12rem; margin:0 0 8px; }
   .note p{ margin:0 0 10px; color:var(--muted); max-width:70ch; font-size:1rem; }
@@ -302,7 +305,7 @@
   <div class="wrap">
     <div class="hero-eyebrow r"><span class="dot"></span><span class="eyebrow">Data analyst by day · builder by night</span></div>
     <h1 class="name r">Daniel <span class="lastname">Grkinich</span></h1>
-    <p class="tagline r">I like to automate the boring things in my life. <span class="soft">Lately that means TTRPG tooling for Pathfinder&nbsp;&amp;&nbsp;FoundryVTT.</span></p>
+    <p class="tagline r">I like to automate the boring things in my life.</p>
     <p class="about r" style="margin-bottom:14px">Hello, I'm a Senior Healthcare Economic Consultant at <b>UnitedHealthcare</b>, doing AI governance and Python automation in healthcare economics.</p>
     <p class="about r">Every project here started the same way: I went looking for the tool, nothing that existed did the job, so I wrote it myself.</p>
     <div class="links r">
@@ -468,9 +471,13 @@
       <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
 
-    <div class="repos r" style="margin-top:10px">
-      <a class="repo" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener"><span>Do you want to see the process in real time? <span class="kind">↗ open the live sheet</span></span><span class="arrow">→</span></a>
-    </div>
+    <a class="expander r" style="margin-top:10px" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener">
+      <span>
+        <span class="ex-lab">✦ Do you want to generate a random character?</span>
+        <small>opens the live character sheet, which will roll one up for you · no account, nothing to install</small>
+      </span>
+      <svg class="ex-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
 
     <div class="notes-wrap" id="notes-body" aria-hidden="true">
     <div class="notes">
