@@ -607,10 +607,15 @@
 </div>
 
 <script>
-(function(){
-  var root=document.documentElement, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  /* ---------- themes (seeded from the Pathfinder-Character-Sheet palettes) ---------- */
+/* ===================================================================
+   SiteCore — the pure half of the site: colour maths, the dice RNG and
+   the roll state machine, plus the theme seed data. Nothing in here
+   touches the DOM, which is what makes it testable from node without a
+   shim. See docs/adr/0001-single-file-site.md.
+   Tests read this block straight out of index.html — test/extract.js.
+   =================================================================== */
+var SiteCore=(function(){
+  /* themes (seeded from the Pathfinder-Character-Sheet palettes) */
   var THEMES=[
     {id:"arcane",label:"Arcane",desc:"indigo night + gold",dark:true,c:["#0A0C16","#E7B24C","#ECE6D6"]},
     {id:"storm",label:"Storm",desc:"indigo night sky",dark:true,c:["#0C0E18","#8A8AD4","#E4E4F6"]},
@@ -625,12 +630,50 @@
   ];
   var NAT20={id:"nat20",label:"Natural 20",desc:"unlocked · crit gold",dark:true,c:["#050505","#FFD24A","#FFFFFF"]};
   var NAT1={id:"nat1",label:"Natural 1",desc:"unlocked · cursed crimson",dark:true,c:["#0C0708","#C96A6A","#E8DADA"]};
-  var BY={}; function idx(){ BY={}; THEMES.forEach(function(t){ BY[t.id]=t; }); } idx();
 
   function hx(h){ h=h.replace("#",""); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
   function toHex(a){ return "#"+a.map(function(n){ n=Math.max(0,Math.min(255,Math.round(n))); return (n<16?"0":"")+n.toString(16); }).join(""); }
   function mix(a,b,t){ a=hx(a); b=hx(b); return toHex([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]); }
   function lum(h){ var c=hx(h).map(function(v){ v/=255; return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4); }); return .2126*c[0]+.7152*c[1]+.0722*c[2]; }
+  /* WCAG relative-contrast ratio, 1:1 to 21:1 */
+  function contrast(a,b){ var x=lum(a), y=lum(b); if(x<y){ var t=x; x=y; y=t; } return (x+.05)/(y+.05); }
+
+  /* rejection sampling — a plain modulo would bias the low end of the range */
+  function randInt(min,max){ var span=max-min+1; if(typeof crypto!=="undefined"&&crypto.getRandomValues){ var buf=new Uint32Array(1), limit=Math.floor(0x100000000/span)*span, x; do{ crypto.getRandomValues(buf); x=buf[0]; }while(x>=limit); return min+(x%span); } return min+Math.floor(Math.random()*span); }
+
+  /* scripted opening, per visitor: stage 0 -> next roll is a 20, stage 1 -> a 1,
+     stage 2+ -> honest forever. `storage` is the seam: localStorage in the page,
+     a plain object in tests. */
+  function makeRollState(storage){
+    var stage=0;
+    try{
+      stage=parseInt(storage.getItem("site.rollStage"),10);
+      if(!(stage>=0)) stage=(storage.getItem("site.got20")==="1")?1:0;  // migrate the old rig
+    }catch(e){ stage=0; }
+    return {
+      stage:function(){ return stage; },
+      next:function(){
+        if(stage>=2) return randInt(1,20);
+        var v=(stage===0)?20:1;
+        stage++;
+        try{ storage.setItem("site.rollStage",String(stage)); }catch(e){}
+        return v;
+      }
+    };
+  }
+
+  return {hx:hx,toHex:toHex,mix:mix,lum:lum,contrast:contrast,randInt:randInt,
+          makeRollState:makeRollState,THEMES:THEMES,NAT20:NAT20,NAT1:NAT1};
+})();
+</script>
+
+<script>
+(function(){
+  var root=document.documentElement, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var mix=SiteCore.mix, lum=SiteCore.lum, randInt=SiteCore.randInt;
+
+  var THEMES=SiteCore.THEMES.slice(), NAT20=SiteCore.NAT20, NAT1=SiteCore.NAT1;
+  var BY={}; function idx(){ BY={}; THEMES.forEach(function(t){ BY[t.id]=t; }); } idx();
 
   var curAccent="#E7B24C";
   function applyTheme(id){
@@ -740,8 +783,8 @@
   if(!reduce){ build(); raf=requestAnimationFrame(draw); }
   addEventListener("resize",function(){ if(raf) build(); });
 
-  /* ---------- d20: crypto rolls, scripted opening (20 then 1, then honest), full-screen throw ---------- */
-  function randInt(min,max){ var span=max-min+1; if(crypto&&crypto.getRandomValues){ var buf=new Uint32Array(1), limit=Math.floor(0x100000000/span)*span, x; do{ crypto.getRandomValues(buf); x=buf[0]; }while(x>=limit); return min+(x%span); } return min+Math.floor(Math.random()*span); }
+  /* ---------- d20: crypto rolls, scripted opening (20 then 1, then honest), full-screen throw ----------
+     randInt and the stage machine live in SiteCore so they can be tested; this half is the DOM wiring. */
   var QUIPS={
     normal:["{n}. The dice have spoken.","A solid {n}.","{n} — not bad, not great. Very analyst of you.","You rolled a {n}. A wild recruiter appears.","{n}. The party nods respectfully.","{n}. Good enough for production."],
     hi:["{n}! One shy of glory.","{n} — so close to greatness."],
@@ -750,20 +793,11 @@
   };
   function pick(a){ return a[randInt(0,a.length-1)]; }
 
-  /* scripted opening (per-visitor; in-memory fallback if storage is blocked):
-     stage 0 -> next roll is a 20, stage 1 -> next roll is a 1, stage 2+ -> honest forever */
-  var stage=0;
-  try{
-    stage=parseInt(localStorage.getItem("site.rollStage"),10);
-    if(!(stage>=0)) stage=(localStorage.getItem("site.got20")==="1")?1:0;  // migrate the old rig
-  }catch(e){ stage=0; }
-  function rolledValue(){
-    if(stage>=2) return randInt(1,20);
-    var v=(stage===0)?20:1;
-    stage++;
-    try{ localStorage.setItem("site.rollStage",String(stage)); }catch(e){}
-    return v;
-  }
+  /* in-memory fallback keeps the machine working when storage is blocked */
+  var memStore={_d:{},getItem:function(k){ return k in this._d?this._d[k]:null; },setItem:function(k,v){ this._d[k]=v; }};
+  var store; try{ localStorage.getItem("site.rollStage"); store=localStorage; }catch(e){ store=memStore; }
+  var rollState=SiteCore.makeRollState(store);
+  function rolledValue(){ return rollState.next(); }
 
   var die=document.getElementById("d20"), dnum=document.getElementById("d20-num"), cap=document.getElementById("d20-cap");
   var rmsg=document.getElementById("roll-msg"), rolling=false, msgT=null, pendingMsg=null;
@@ -773,6 +807,7 @@
      Hover only enriches the stage-0 phrasing; stages 1 and 2 read the same hovered or not. */
   var HOVERABLE=matchMedia("(hover: hover)").matches;
   function capText(hovering){
+    var stage=rollState.stage();
     if(stage===0) return (hovering&&HOVERABLE) ? "roll a natural 20 for a surprise"
                                                : (HOVERABLE ? "roll me" : "tap to roll a d20");
     if(stage===1) return "press your luck";
