@@ -138,9 +138,11 @@
   .card.flagship > *{ position:relative; z-index:1; }          /* keep content above the rail + corner glow */
   .card-eyebrow{ display:block; color:var(--accent); margin-bottom:10px; }
 
-  /* metrics row — the numbers were buried mid-paragraph; they carry the card now */
+  /* metrics row — the numbers live at the top of the build-notes section, where the depth is.
+     .lead drops the top rule because the section heading already draws one right above it. */
   .metrics{ display:grid; grid-template-columns:repeat(auto-fit,minmax(78px,1fr)); gap:12px; margin:0 0 16px;
     padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .metrics.lead{ border-top:0; padding-top:0; margin-bottom:20px; }
   .metrics div{ min-width:0; }
   .metrics .n{ display:block; font-family:var(--sans); font-weight:800; font-size:1.3rem; line-height:1.1; letter-spacing:-.02em;
     color:var(--ink); font-variant-numeric:tabular-nums; }
@@ -157,6 +159,8 @@
   /* architecture diagram — inline SVG so it themes for free and costs no request */
   .arch{ margin:16px 0 0; }
   .arch svg{ display:block; width:100%; height:auto; }
+  /* inside a note the measure is 70ch — without a cap the 260-unit SVG stretches and the 8px labels bloat */
+  .note .arch{ max-width:430px; margin-top:18px; }
   .arch .box{ fill:var(--surface-2); stroke:color-mix(in srgb,var(--accent) 38%,var(--line)); stroke-width:1; }
   .arch .lbl{ fill:var(--ink); font-family:var(--mono); font-size:8px; }
   .arch .sub{ fill:var(--faint); font-family:var(--mono); font-size:6px; }
@@ -165,9 +169,7 @@
   .arch figcaption{ font-family:var(--mono); font-size:.62rem; color:var(--faint); margin-top:8px; line-height:1.45; }
 
   /* ===== sample character reveal (static output — Flask isn't hosted) ===== */
-  .sample{ grid-column:1/-1; padding-top:18px; border-top:1px solid var(--line); }
-  /* the banner sits INSIDE a card, which is itself var(--surface) — without this it'd be invisible */
-  .sample .expander{ background:var(--surface-2); }
+  .sample{ margin-top:10px; }
   .sample-out{ overflow:hidden; max-height:0; opacity:0; transition:max-height .5s var(--ease), opacity .4s ease; }
   .sample-out.open{ max-height:1800px; opacity:1; }
   .sheet{ display:grid; gap:13px; padding-top:18px; transition:opacity .2s ease; }
@@ -200,6 +202,14 @@
   .expander small{ display:block; font-family:var(--mono); font-size:.68rem; color:var(--faint); margin-top:5px; line-height:1.45; }
   .expander .ex-chev{ flex:0 0 auto; width:20px; height:20px; color:var(--accent); transition:transform .3s var(--ease); }
   .expander[aria-expanded="true"] .ex-chev{ transform:rotate(180deg); }
+  /* .ghost = the secondary door. Two banners stacked would compete at equal weight, so this one
+     drops to the plain --line border and a muted label; the build-notes banner stays the loud one. */
+  .expander.ghost{ background:transparent; border-color:var(--line); padding:13px clamp(18px,2.4vw,24px); }
+  .expander.ghost:hover{ background:var(--surface); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
+  .expander.ghost .ex-lab{ font-size:.8rem; color:var(--muted); }
+  .expander.ghost:hover .ex-lab{ color:var(--accent); }
+  .expander.ghost .ex-chev{ width:17px; height:17px; color:var(--faint); }
+  .expander.ghost:hover .ex-chev{ color:var(--accent); }
   /* max-height is driven from JS (measured), never a hardcoded cap — this block is too tall to guess */
   .notes-wrap{ overflow:hidden; max-height:0; opacity:0; transition:max-height .55s var(--ease), opacity .4s ease; }
   .notes-wrap.open{ opacity:1; }
@@ -367,60 +377,14 @@
           <h3>PF1e Character Generator</h3>
           <div class="wh"><span class="k">Why</span><p>There was essentially no real Pathfinder 1e character generator — a few very basic ones that did a fraction of the work, and nothing that came close to the rules my table actually plays with (<b>Path of War</b>, <b>Spheres of Power/Might</b>, and years of house rules).</p></div>
           <div class="wh"><span class="k">How</span><p>Twelve inputs go in; a Python core assembles a complete, <b>rules-legal</b> character, and a containerized Flask service hands FoundryVTT a finished actor — published to the official package registry, in production since 2023.</p></div>
-          <div class="metrics tnum">
-            <div><span class="n">758</span><span class="l">classes &amp; archetypes</span></div>
-            <div><span class="n">8,816</span><span class="l">feats indexed</span></div>
-            <div><span class="n">700+</span><span class="l">python functions</span></div>
-            <div><span class="n">2</span><span class="l">3rd-party systems</span></div>
-            <div><span class="n">3 yrs</span><span class="l">in production</span></div>
-          </div>
           <div class="stat-line"><span class="chip pkg">Published package</span><span class="chip">Flask</span><span class="chip">Python</span><span class="chip">Docker</span></div>
         </div>
-
-        <div>
-          <div class="repos">
-            <a class="repo" href="https://foundryvtt.com/packages/pf1e-random-char-generator" target="_blank" rel="noopener"><span>Install on FoundryVTT <span class="kind">↗ package</span></span><span class="arrow">→</span></a>
-            <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder_Char_Creator" target="_blank" rel="noopener"><span>Generator backend <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
-            <a class="repo" href="https://github.com/The-Data-is-a-lie/FoundryVTT_Random_Pf1e_Char_Generator" target="_blank" rel="noopener"><span>Foundry module <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
-            <a class="repo" href="https://gitlab.com/pathfinder_1e_randomized_character_generator/FoundryVTT_Random_Pf1e_Char_Generator/-/wikis/home" target="_blank" rel="noopener"><span>Docs &amp; wiki <span class="kind">↗ gitlab</span></span><span class="arrow">→</span></a>
-            <a class="repo" href="#pf1e-generator"><span>Read the build notes <span class="kind">↓ expands below</span></span><span class="arrow">→</span></a>
-          </div>
-
-          <figure class="arch">
-            <svg viewBox="0 0 260 186" aria-hidden="true" focusable="false">
-              <g>
-                <rect class="box" x="0.5" y="0.5" width="259" height="34" rx="3"/>
-                <text class="lbl" x="11" y="15">Foundry module</text>
-                <text class="sub" x="11" y="26">JavaScript · in-app UI, 12 inputs</text>
-                <rect class="box" x="0.5" y="50.5" width="259" height="34" rx="3"/>
-                <text class="lbl" x="11" y="65">Flask API</text>
-                <text class="sub" x="11" y="76">Docker · containerized service</text>
-                <rect class="box" x="0.5" y="100.5" width="259" height="34" rx="3"/>
-                <text class="lbl" x="11" y="115">generator core</text>
-                <text class="sub" x="11" y="126">Python · 55+ modules, 700+ functions</text>
-                <rect class="box" x="0.5" y="150.5" width="259" height="34" rx="3"/>
-                <text class="lbl" x="11" y="165">actor JSON</text>
-                <text class="sub" x="11" y="176">a rules-legal, 111-item character sheet</text>
-              </g>
-              <g>
-                <line class="flow" x1="130" y1="35" x2="130" y2="45"/><polygon class="tip" points="130,50 126,44 134,44"/>
-                <line class="flow" x1="130" y1="85" x2="130" y2="95"/><polygon class="tip" points="130,100 126,94 134,94"/>
-                <line class="flow" x1="130" y1="135" x2="130" y2="145"/><polygon class="tip" points="130,150 126,144 134,144"/>
-              </g>
-            </svg>
-            <figcaption>Flow: Foundry module → Flask API → generator core → actor JSON.</figcaption>
-          </figure>
-        </div>
-
-        <div class="sample">
-          <button class="expander" id="sample-btn" type="button" aria-expanded="false" aria-controls="sample-out">
-            <span>
-              <span class="ex-lab">✦ Show a character it made</span>
-              <small>a real level-14 wizard the tool produced · 111 items · saved output, no backend needed</small>
-            </span>
-            <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="sample-out" id="sample-out" aria-hidden="true"><div class="sheet" id="sample-sheet"></div></div>
+        <div class="repos">
+          <a class="repo" href="https://foundryvtt.com/packages/pf1e-random-char-generator" target="_blank" rel="noopener"><span>Install on FoundryVTT <span class="kind">↗ package</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/Pathfinder_Char_Creator" target="_blank" rel="noopener"><span>Generator backend <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+          <a class="repo" href="https://github.com/The-Data-is-a-lie/FoundryVTT_Random_Pf1e_Char_Generator" target="_blank" rel="noopener"><span>Foundry module <span class="kind">↗ github</span></span><span class="arrow">→</span></a>
+          <!-- the appendix sits below the contact block, so this row is its only bridge from the work section -->
+          <a class="repo" href="#pf1e-generator"><span>Read the build notes <span class="kind">↓ the whole process</span></span><span class="arrow">→</span></a>
         </div>
       </article>
 
@@ -518,6 +482,15 @@
 
   <section id="pf1e-generator">
     <div class="sec-head r"><h2>Build notes — PF1e generator</h2><span class="count">the long version</span></div>
+
+    <div class="metrics lead tnum r">
+      <div><span class="n">758</span><span class="l">classes &amp; archetypes</span></div>
+      <div><span class="n">8,816</span><span class="l">feats indexed</span></div>
+      <div><span class="n">700+</span><span class="l">python functions</span></div>
+      <div><span class="n">2</span><span class="l">3rd-party systems</span></div>
+      <div><span class="n">3 yrs</span><span class="l">in production</span></div>
+    </div>
+
     <button class="expander r" id="notes-btn" type="button" aria-expanded="false" aria-controls="notes-body">
       <span>
         <span class="ex-lab">✦ Read the build notes</span>
@@ -525,6 +498,18 @@
       </span>
       <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
+
+    <div class="sample r">
+      <button class="expander ghost" id="sample-btn" type="button" aria-expanded="false" aria-controls="sample-out">
+        <span>
+          <span class="ex-lab">✦ Show a character it made</span>
+          <small>a real level-14 wizard the tool produced · 111 items · saved output, no backend needed</small>
+        </span>
+        <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="sample-out" id="sample-out" aria-hidden="true"><div class="sheet" id="sample-sheet"></div></div>
+    </div>
+
     <div class="notes-wrap" id="notes-body" aria-hidden="true">
     <div class="notes">
 
@@ -568,6 +553,32 @@
         <h3><span class="num">04</span>The front end I hadn't planned for</h3>
         <p>Finishing the backend didn't finish the project. I had a service that could produce a correct character and nowhere to show it — and handing someone a JSON blob isn't a tool. After learning Python from scratch and building the generator core, I still needed somewhere the output could actually live.</p>
         <p>So the front end became <b>FoundryVTT</b>, the virtual tabletop my friends and I already played in. That meant learning <b>JavaScript from scratch</b>, and learning the internals of a large application I hadn't written: its data model, its hooks, how actors and items are structured, how to write back a fully populated sheet without corrupting it. The module collects twelve inputs in-app, calls the Flask service, and writes back a finished actor — items, spells, feats and all.</p>
+
+        <figure class="arch">
+          <svg viewBox="0 0 260 186" aria-hidden="true" focusable="false">
+            <g>
+              <rect class="box" x="0.5" y="0.5" width="259" height="34" rx="3"/>
+              <text class="lbl" x="11" y="15">Foundry module</text>
+              <text class="sub" x="11" y="26">JavaScript · in-app UI, 12 inputs</text>
+              <rect class="box" x="0.5" y="50.5" width="259" height="34" rx="3"/>
+              <text class="lbl" x="11" y="65">Flask API</text>
+              <text class="sub" x="11" y="76">Docker · containerized service</text>
+              <rect class="box" x="0.5" y="100.5" width="259" height="34" rx="3"/>
+              <text class="lbl" x="11" y="115">generator core</text>
+              <text class="sub" x="11" y="126">Python · 55+ modules, 700+ functions</text>
+              <rect class="box" x="0.5" y="150.5" width="259" height="34" rx="3"/>
+              <text class="lbl" x="11" y="165">actor JSON</text>
+              <text class="sub" x="11" y="176">a rules-legal, 111-item character sheet</text>
+            </g>
+            <g>
+              <line class="flow" x1="130" y1="35" x2="130" y2="45"/><polygon class="tip" points="130,50 126,44 134,44"/>
+              <line class="flow" x1="130" y1="85" x2="130" y2="95"/><polygon class="tip" points="130,100 126,94 134,94"/>
+              <line class="flow" x1="130" y1="135" x2="130" y2="145"/><polygon class="tip" points="130,150 126,144 134,144"/>
+            </g>
+          </svg>
+          <figcaption>Flow: Foundry module → Flask API → generator core → actor JSON.</figcaption>
+        </figure>
+
         <p>It's published on the official FoundryVTT package registry and has been in production since 2023. That's the part I'm actually proud of: not that it works on my machine, but that it's installable by strangers and has been in continuous use for three years, which is a very different bar.</p>
       </div>
 
@@ -576,6 +587,10 @@
         <p>At the start I didn't know what I was doing. I began by copying a GitHub repo and iterating on it, and every basic change took far longer than it should have because I was working inside someone else's structure without really understanding it. Eventually I got fed up and rebuilt the whole thing from scratch — which was the right call, just much later than it should have come.</p>
         <p>So the main thing I'd change is <b>scoping</b>. I'd map the project out before writing anything: an explicit diagram of what it needed to do, what data it needed, and what the pieces were. Almost all of the rework traced back to not having that picture and figuring it out as I went instead.</p>
         <p>Smaller ones, all still true: model the prerequisite graph explicitly from day one rather than letting validation logic scatter across every module that needs it; treat the data pipeline as the foundation it turned out to be instead of a chore; and write property-based tests over legality — "no generated character ever violates a prerequisite" is exactly the kind of invariant that deserves a fuzzer rather than a handful of examples.</p>
+      </div>
+
+      <div class="repos">
+        <a class="repo" href="https://gitlab.com/pathfinder_1e_randomized_character_generator/FoundryVTT_Random_Pf1e_Char_Generator/-/wikis/home" target="_blank" rel="noopener"><span>Docs &amp; wiki <span class="kind">↗ gitlab</span></span><span class="arrow">→</span></a>
       </div>
 
     </div>
