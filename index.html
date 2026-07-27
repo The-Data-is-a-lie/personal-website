@@ -212,31 +212,6 @@
   .took-skills .k{ font-family:var(--mono); font-size:var(--step-1); letter-spacing:.09em; text-transform:uppercase; color:var(--accent); padding-top:3px; }
 
   /* contact / résumé */
-  .contact-grid{ display:grid; gap:14px; }
-  .reveal-row{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
-  .reveal-btn{ font-family:var(--mono); font-size:var(--step-3); cursor:pointer; padding:10px 16px; border:1px dashed var(--line); border-radius:999px; background:var(--surface); color:var(--muted); transition:border-color .2s, color .2s, transform .25s var(--ease); }
-  .reveal-btn:hover{ border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
-  .revealed{ font-family:var(--mono); font-size:var(--step-3); }
-  .revealed a{ color:var(--accent); }
-  .resume{ margin-top:8px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; max-height:0; opacity:0; transition:max-height .5s var(--ease), opacity .4s ease; }
-  /* no max-height here on purpose — disclosure() measures it, so adding roles can't clip it */
-  .resume.open{ opacity:1; }
-  .resume-inner{ padding:clamp(24px,3.5vw,40px); }
-  .r-name{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; font-size:1.7rem; margin:0 0 4px; }
-  .r-contact{ font-family:var(--mono); font-size:var(--step-3); color:var(--muted); margin-bottom:26px; }
-  .r-sec{ margin-top:26px; }
-  .r-sec > .eyebrow{ display:block; padding-bottom:8px; border-bottom:1px solid var(--line); margin-bottom:16px; }
-  .r-job{ margin-bottom:18px; }
-  .r-job .top{ display:flex; justify-content:space-between; gap:12px; align-items:baseline; flex-wrap:wrap; }
-  .r-job .org{ font-weight:600; }
-  .r-job .when{ font-family:var(--mono); font-size:var(--step-2); color:var(--faint); }
-  .r-job .role{ color:var(--accent); font-size:var(--step-4); margin:2px 0 8px; }
-  .r-job ul{ margin:0; padding-left:1.1em; color:var(--muted); font-size:var(--step-4); }
-  .r-job li{ margin:4px 0; }
-  .r-skills div{ margin:6px 0; font-size:var(--step-4); }
-  .r-skills .k{ font-family:var(--mono); font-size:var(--step-2); text-transform:uppercase; letter-spacing:.1em; color:var(--faint); margin-right:8px; }
-  .edu-row{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:var(--step-5); }
-  .edu-row .when{ font-family:var(--mono); font-size:var(--step-2); color:var(--faint); }
 
   footer{ padding:40px 0 60px; border-top:1px solid var(--line); }
   .foot-grid{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
@@ -318,6 +293,9 @@
     <p class="about r" style="margin-bottom:14px">Hello, I'm a Senior Healthcare Economic Consultant at <b>UnitedHealthcare</b>, doing AI governance and Python automation in healthcare economics.</p>
     <p class="about r">Every project here started the same way: I went looking for the tool, nothing that existed did the job, so I wrote it myself.</p>
     <div class="links r">
+      <a class="link" href="resume.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linejoin="round"/><path d="M14 2v6h6M8 13h8M8 17h5" stroke-linecap="round"/></svg>
+        Résumé</a>
       <a class="link primary" href="https://github.com/The-Data-is-a-lie" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 8.4 22.9c.6.1.8-.25.8-.56v-2c-3.3.72-4-1.4-4-1.4-.55-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.73.08-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .31.2.67.81.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
         GitHub</a>
@@ -329,7 +307,7 @@
         FoundryVTT</a>
       <button class="link" id="email-btn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-        <span id="email-label">Reveal email</span></button>
+        <span id="email-label">Contact me</span></button>
     </div>
   </div>
 </header>
@@ -387,79 +365,6 @@
         </div>
       </article>
 
-    </div>
-  </section>
-
-  <section id="contact">
-    <div class="sec-head r"><h2>Get in touch</h2><span class="count">no bots, please</span></div>
-    <div class="contact-grid r">
-      <p class="about" style="margin:0 0 6px">My email and my résumé are both here. They stay hidden from scrapers until you ask for them.</p>
-      <div class="reveal-row">
-        <button class="reveal-btn" id="email-btn2" type="button">✦ Reveal email address</button>
-        <span class="revealed" id="email-out" hidden></span>
-      </div>
-      <div class="reveal-row">
-        <button class="reveal-btn" id="resume-btn" type="button">✦ View résumé</button>
-      </div>
-
-      <div class="resume" id="resume" aria-hidden="true">
-        <div class="resume-inner">
-          <p class="r-name">Daniel Grkinich</p>
-          <p class="r-contact" id="r-contact">Résumé — reveal to load contact line</p>
-
-          <div class="r-sec">
-            <span class="eyebrow">Campaign log · experience</span>
-            <div class="r-job">
-              <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Mar 2026 — Present</span></div>
-              <div class="role">Senior Healthcare Economic Consultant</div>
-              <ul>
-                <li>Technical lead for a newly-formed AI Governance team; designed and shipped an LLM-based agent (Python, LLM APIs, tool-calling orchestration) that generates the project tickets a team of PMs log their hours against, cutting the hours they spend on that intake by an estimated 80%.</li>
-                <li>Automated the creation and QC of recurring leadership reports in Python and Snowflake, replacing manual builds and including reports delivered directly to the C-suite.</li>
-              </ul>
-            </div>
-            <div class="r-job">
-              <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Oct 2024 — Mar 2026</span></div>
-              <div class="role">Healthcare Economic Consultant</div>
-              <ul>
-                <li>Led a small team to automate a recurring quarterly process end-to-end in Python — from a 5-person to a 1-person effort, saving ~24 work-months per year.</li>
-                <li>Supported reporting &amp; compliance for a value-based-care program spanning <span class="tnum">$20B+</span> in annual spend (<span class="tnum">$1B+</span> saved) across <span class="tnum">800+</span> hospital systems.</li>
-                <li>Built value-based-care metrics from claims-level data (readmission ratio, inpatient LOS, ER-to-inpatient escalation) to quantify medical-cost savings.</li>
-                <li>Designed and led monthly Python automation training; onboarded and standardized practices across new analysts.</li>
-              </ul>
-            </div>
-            <div class="r-job">
-              <div class="top"><span class="org">UnitedHealthcare</span><span class="when">Apr 2022 — Oct 2024</span></div>
-              <div class="role">Senior Healthcare Economic Analyst</div>
-              <ul>
-                <li>Built SAS and Unix data pipelines over claims datasets exceeding <span class="tnum">100M</span> rows (inpatient, facility, financial, outpatient/ER).</li>
-                <li>Developed a scikit-learn classifier to flag the top 5% most expensive events, improving F1 by 10%+ over the prior model.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="r-sec">
-            <span class="eyebrow">Notable project</span>
-            <div class="r-job">
-              <div class="top"><span class="org">Full-Stack / Automation Engineering</span><span class="when">Oct 2023 — Present</span></div>
-              <div class="role">Personal project</div>
-              <ul><li>Independently built and maintain a production open-source Pathfinder 1e character generator — <span class="tnum">55+</span> automation modules / <span class="tnum">700+</span> Python functions that assemble a complete, rules-legal character from 12 inputs, including two full third-party rule systems (Path of War, Spheres of Power/Might) and a campaign house-rule layer — shipped as a containerized Flask service (Docker, CI/CD), in production since 2023 and published to all FoundryVTT users.</li></ul>
-            </div>
-          </div>
-
-          <div class="r-sec">
-            <span class="eyebrow">Education</span>
-            <div class="edu-row"><span><b>M.S. Economics</b> — Cal State University, Fullerton</span><span class="when">2020 — 2022</span></div>
-            <div class="edu-row" style="margin-top:8px"><span><b>B.S. Economics</b> — University of California, Irvine</span><span class="when">2017 — 2020</span></div>
-          </div>
-
-          <div class="r-sec r-skills">
-            <span class="eyebrow">Skills</span>
-            <div><span class="k">Programming</span>Python · SQL · SAS · JavaScript · Flask · Snowflake · Unix · Git · Docker · OOP · AI Agents · LLMs · Prompt Engineering · Eval &amp; Guardrails</div>
-            <div><span class="k">Data &amp; BI</span>Advanced Excel · Visual Basic · Tableau · Power BI · Automation</div>
-            <div><span class="k">Healthcare</span>Inpatient Utilization · DRG Groupers · ICD-10 · Capitation &amp; Risk Delegation</div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -815,19 +720,20 @@ var SiteCore=(function(){
     };
   }
 
-  /* ---------- email + résumé ---------- */
-  var addr=["daniel","grkinich"].join("")+"@"+["gmail","com"].join(".");
-  var eb=document.getElementById("email-btn"), el=document.getElementById("email-label");
-  eb.addEventListener("click",function(){ if(el.textContent===addr){ location.href="mailto:"+addr; return; } el.textContent=addr; eb.classList.add("primary"); });
-  document.getElementById("email-btn2").addEventListener("click",function(){ var out=document.getElementById("email-out"); out.hidden=false; out.innerHTML='<a href="mailto:'+addr+'">'+addr+'</a>'; this.textContent="✦ Email revealed ↓"; this.disabled=true; this.style.opacity=.6; });
-  var rb=document.getElementById("resume-btn"), rp=document.getElementById("resume");
-  if(rb&&rp) disclosure(rb,rp,{
-    scrollOnToggle:true, scrollAnchor:rp,
-    label:function(open){ return open?"✦ Hide résumé":"✦ View résumé"; },
-    onFirstOpen:function(){
-      document.getElementById("r-contact").innerHTML='<a href="mailto:'+addr+'">'+addr+'</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/daniel-grkinich-a93847199/" target="_blank" rel="noopener">linkedin.com/in/daniel-grkinich</a>';
-    }
-  });
+  /* ---------- email ----------
+     Click once to show the address so it can be selected and copied; click again to
+     open a mail client. Written plainly — the old join() trick was there to keep it
+     from scrapers, and that is no longer the point. */
+  var EMAIL="danielgrkinich@gmail.com";
+  var ebtn=document.getElementById("email-btn"), elab=document.getElementById("email-label");
+  if(ebtn&&elab){
+    ebtn.addEventListener("click",function(){
+      if(elab.textContent===EMAIL){ location.href="mailto:"+EMAIL; return; }
+      elab.textContent=EMAIL;
+      ebtn.classList.add("primary");
+      ebtn.setAttribute("title","Click again to open your mail client");
+    });
+  }
 
   /* ---------- build-notes appendix (collapsed by default) ---------- */
   var nbtn=document.getElementById("notes-btn"), nbody=document.getElementById("notes-body");
