@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const HTML = path.join(__dirname, '..', 'index.html');
+const RESUME = path.join(__dirname, '..', 'resume.html');
 
 function loadCore() {
   const html = fs.readFileSync(HTML, 'utf8');
@@ -37,4 +38,38 @@ function fakeStorage(seed) {
   };
 }
 
-module.exports = { loadCore, allThemes, fakeStorage, HTML };
+/* The custom properties a page hardcodes in its :root block, as
+   { "--bg": "#0A0C16", ... }. Same reasoning as loadCore: read the shipped
+   file, so a fallback that drifts away from the derivation gets caught. */
+function rootVars(file) {
+  const css = fs.readFileSync(file, 'utf8');
+  const block = css.match(/:root\s*\{([\s\S]*?)\}/);
+  if (!block) throw new Error(`no :root block in ${path.basename(file)}`);
+
+  const vars = {};
+  for (const [, name, value] of block[1].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+    vars[name] = value.trim();
+  }
+  return vars;
+}
+
+/* resume.html's six-line token reader, pulled out of the shipped page and made
+   callable. Same bargain as loadCore: it touches only `document` and
+   `localStorage`, so two fakes are enough and there is no copy to drift.
+   Returns the custom properties it would have set. */
+function runResumeReader(storage) {
+  const html = fs.readFileSync(RESUME, 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map((m) => m[1])
+    .find((b) => b.includes('site.tokens'));
+  if (!src) throw new Error('no site.tokens reader found in resume.html');
+
+  const applied = {};
+  const doc = { documentElement: { style: { setProperty: (k, v) => { applied[k] = v; } } } };
+  new Function('document', 'localStorage', src)(doc, storage);
+  return applied;
+}
+
+module.exports = {
+  loadCore, allThemes, fakeStorage, rootVars, runResumeReader, HTML, RESUME,
+};
