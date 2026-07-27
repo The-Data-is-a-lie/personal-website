@@ -31,9 +31,11 @@
     --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
     --serif:"Palatino Linotype","Book Antiqua","Iowan Old Style",Georgia,serif;
     --mono:"Cascadia Code","Cascadia Mono",Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
-    --bg:#0A0C16; --surface:#12162A; --surface-2:#171D36;
-    --ink:#ECE6D6; --muted:#A2A8C2; --faint:#6E7492; --line:#242B4C;
-    --accent:#E7B24C; --accent-ink:#0A0C16; --field-op:1;
+    /* Pre-JS fallbacks. These must equal deriveTokens(arcane) exactly, or the
+       first paint shows colours the script then replaces. */
+    --bg:#0A0C16; --surface:#151720; --surface-2:#23242b;
+    --ink:#ECE6D6; --muted:#c8c3b7; --faint:#a4a099; --line:#303137;
+    --accent:#E7B24C; --accent-ink:#090b13; --field-op:1;
     --maxw:1080px; --radius:5px; --ease:cubic-bezier(.22,.61,.36,1);
     --hero-size:clamp(3rem,10vw,7.4rem);
   }
@@ -638,6 +640,33 @@ var SiteCore=(function(){
   /* WCAG relative-contrast ratio, 1:1 to 21:1 */
   function contrast(a,b){ var x=lum(a), y=lum(b); if(x<y){ var t=x; x=y; y=t; } return (x+.05)/(y+.05); }
 
+  /* How far --muted and --faint are pulled from ink toward bg. These two numbers
+     are contrast-gated, not taste: .34/.54 read better but put --faint at 2.47:1
+     on the light themes. Raising faint alone collapses it into muted, so both
+     move together. test/contrast.test.js enforces it. See docs/adr/0002. */
+  var MUTED=.16, FAINT=.32;
+
+  /* Every CSS custom property the page derives from a theme's three seeds.
+     applyTheme only writes what this returns, so the contrast tests exercise
+     the real derivation rather than a restatement of it. */
+  function deriveTokens(t){
+    var bg=t.c[0], accent=t.c[1], ink=t.c[2];
+    return {
+      bg:bg, ink:ink, accent:accent,
+      surface:mix(bg,ink,.05), surface2:mix(bg,ink,.11), line:mix(bg,ink,.17),
+      muted:mix(ink,bg,MUTED), faint:mix(ink,bg,FAINT),
+      /* Ask which of the two candidates actually contrasts better rather than
+         guessing from a luminance threshold. The old `lum(accent)>.55` cut sat
+         just above gold, so the default theme put white text on a gold button
+         at 1.93:1. */
+      accentInk: (function(){
+        var dark=mix(bg,"#000000",.12);
+        return contrast(dark,accent) >= contrast("#ffffff",accent) ? dark : "#ffffff";
+      })(),
+      fieldOp: t.dark ? "1" : "0.38"
+    };
+  }
+
   /* rejection sampling — a plain modulo would bias the low end of the range */
   function randInt(min,max){ var span=max-min+1; if(typeof crypto!=="undefined"&&crypto.getRandomValues){ var buf=new Uint32Array(1), limit=Math.floor(0x100000000/span)*span, x; do{ crypto.getRandomValues(buf); x=buf[0]; }while(x>=limit); return min+(x%span); } return min+Math.floor(Math.random()*span); }
 
@@ -663,7 +692,8 @@ var SiteCore=(function(){
   }
 
   return {hx:hx,toHex:toHex,mix:mix,lum:lum,contrast:contrast,randInt:randInt,
-          makeRollState:makeRollState,THEMES:THEMES,NAT20:NAT20,NAT1:NAT1};
+          deriveTokens:deriveTokens,makeRollState:makeRollState,
+          THEMES:THEMES,NAT20:NAT20,NAT1:NAT1};
 })();
 </script>
 
@@ -677,12 +707,12 @@ var SiteCore=(function(){
 
   var curAccent="#E7B24C";
   function applyTheme(id){
-    var t=BY[id]||BY.arcane, bg=t.c[0], accent=t.c[1], ink=t.c[2], s=root.style; curAccent=accent;
-    s.setProperty("--bg",bg); s.setProperty("--ink",ink); s.setProperty("--accent",accent);
-    s.setProperty("--surface",mix(bg,ink,.05)); s.setProperty("--surface-2",mix(bg,ink,.11)); s.setProperty("--line",mix(bg,ink,.17));
-    s.setProperty("--muted",mix(ink,bg,.34)); s.setProperty("--faint",mix(ink,bg,.54));
-    s.setProperty("--accent-ink", lum(accent)>.55?mix(bg,"#000000",.12):"#ffffff");
-    s.setProperty("--field-op", t.dark?"1":"0.38");
+    var t=BY[id]||BY.arcane, k=SiteCore.deriveTokens(t), s=root.style; curAccent=k.accent;
+    s.setProperty("--bg",k.bg); s.setProperty("--ink",k.ink); s.setProperty("--accent",k.accent);
+    s.setProperty("--surface",k.surface); s.setProperty("--surface-2",k.surface2); s.setProperty("--line",k.line);
+    s.setProperty("--muted",k.muted); s.setProperty("--faint",k.faint);
+    s.setProperty("--accent-ink",k.accentInk);
+    s.setProperty("--field-op",k.fieldOp);
     document.getElementById("theme-cur").textContent=t.label;
     Array.prototype.forEach.call(document.querySelectorAll(".theme-opt"),function(o){ o.setAttribute("aria-selected",String(o.dataset.id===id)); });
     try{ localStorage.setItem("site.theme",id); }catch(e){}
