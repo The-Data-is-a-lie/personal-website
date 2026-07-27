@@ -83,8 +83,11 @@
   .theme-opt .dots{ display:inline-flex; flex:0 0 auto; }
   .theme-opt .dot{ width:14px; height:14px; border-radius:50%; margin-left:-5px; border:1.5px solid var(--surface); }
   .theme-opt .dot:first-child{ margin-left:0; }
-  .theme-opt .lab{ font-size:var(--step-4); font-weight:600; line-height:1.1; }
-  .theme-opt .desc{ font-family:var(--mono); font-size:var(--step-1); color:var(--faint); margin-top:2px; }
+  /* label and description stack. Both were inline, so they ran together on one line
+     and the margin-top did nothing — the wrapper needs min-width:0 to wrap in the flex row. */
+  .theme-opt > span:nth-child(2){ flex:1 1 auto; min-width:0; }
+  .theme-opt .lab{ display:block; font-size:var(--step-4); font-weight:600; line-height:1.25; }
+  .theme-opt .desc{ display:block; font-family:var(--mono); font-size:var(--step-1); color:var(--faint); margin-top:1px; line-height:1.3; }
   .theme-opt[aria-selected="true"]{ background:color-mix(in srgb,var(--accent) 14%, transparent); }
   .theme-opt .tick{ margin-left:auto; color:var(--accent); opacity:0; }
   .theme-opt[aria-selected="true"] .tick{ opacity:1; }
