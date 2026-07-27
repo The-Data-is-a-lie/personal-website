@@ -1,0 +1,9 @@
+{
+  "name": "personal-website",
+  "private": true,
+  "description": "Dev-only tooling. The site itself is index.html with no build and no dependencies - see docs/adr/0001-single-file-site.md",
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "license": "UNLICENSED"
+}
