@@ -8,7 +8,8 @@ My personal site — a single static page, no build step, no dependencies.
 
 | Path | Purpose |
 | --- | --- |
-| `index.html` | The whole site — markup, inline CSS, and inline vanilla JS |
+| `index.html` | The site — markup, inline CSS, and inline vanilla JS |
+| `resume.html` | Standalone printable résumé. Self-contained; shares nothing with `index.html` |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is instead of running Jekyll |
 | `test/` | Dev-only. Never served |
 | `docs/adr/` | Why the site is shaped the way it is |
@@ -44,5 +45,7 @@ sweep asserting every theme clears WCAG AA on every text pair.
 - The `MUTED` and `FAINT` constants in `SiteCore` are contrast-gated rather than
   chosen by eye — see [ADR-0002](docs/adr/0002-contrast-gated-theme-tokens.md)
   before changing them.
-- The email address is assembled in JS rather than written into the markup, to
-  keep it away from scrapers.
+- The email address is no longer hidden from scrapers — that was more friction for
+  recruiters than it was worth against bots. `resume.html` prints it plainly; the
+  home page's Contact me pill reveals it on click so it can be copied, then opens a
+  mail client on the second click.
