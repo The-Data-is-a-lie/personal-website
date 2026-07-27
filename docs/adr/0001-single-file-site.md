@@ -1,6 +1,6 @@
 # ADR-0001 — Self-contained pages, and a repo that is not
 
-**Status:** accepted · 2026-07-27 · **amended 2026-07-27** (see *Amendment* below)
+**Status:** accepted · 2026-07-27 · **amended twice, 2026-07-27** (see *Amendments* below)
 
 ## Context
 
@@ -54,7 +54,7 @@ directory are fine, because they never reach a visitor. Deploying is still
 
 ---
 
-## Amendment — `resume.html` (2026-07-27)
+## Amendment 1 — `resume.html` (2026-07-27)
 
 The site is now **two pages**, not one. `index.html` and `resume.html`.
 
@@ -94,3 +94,51 @@ module was justified in part on having two, so the seam is hypothetical again by
 standard we set. It stays because the notes genuinely need measured height and the
 alternative is inlining 40 lines back into a call site — but it is worth being honest that
 the résumé's clipping bug is now fixed by deletion rather than by the abstraction.
+
+---
+
+## Amendment 2 — the résumé follows the theme (2026-07-27)
+
+Amendment 1 left the résumé permanently *arcane*. Switch the site to Parchment, click
+through, and the résumé stayed dark. It now follows whatever theme was last picked.
+
+### It follows the theme without gaining a theme engine
+
+The load-bearing sentence in Amendment 1 was "**`resume.html` derives nothing** … there is
+no derived value that can drift out of step with `SiteCore.deriveTokens`". That is still
+true, and it is what made this cheap.
+
+`applyTheme` already computes the finished token set. It now also caches it —
+`localStorage["site.tokens"]`, a flat `{"--bg":"#0A0C16", …}` object with a `v:1` stamp.
+`resume.html` carries six lines in `<head>` that read that object and `setProperty` each
+key. It applies pre-computed strings. It still derives nothing, still has no colour maths,
+still has no picker.
+
+`SiteCore.cssVars(theme)` is new and is the only place the token → property-name mapping
+lives; `applyTheme` loops it instead of restating it across nine `setProperty` calls.
+
+### Why not a shared `core.js`
+
+The obvious alternative — pull `SiteCore` into a file both pages load — was rejected for
+the reason Amendment 1 rejected a shared stylesheet: it costs `index.html` its
+self-containment for the sake of one small page. (The table above rules out *ES* modules
+because `file://` blocks them. A classic `<script src>` would in fact work from disk, so
+that row is not the objection here. The extra request is.)
+
+### Consequences
+
+- **Print is untouched.** `@media print` sets `background`/`color` directly rather than
+  through `var()`, so the inline custom properties never reach it. The PDF is
+  black-on-white in every theme, verified in both a light and a dark one.
+- **Graceful by default.** No cached tokens — never visited `index.html`, or arrived on a
+  pasted résumé URL — means the hardcoded `:root` block stands, exactly as before.
+- **The reader is parser-blocking, in `<head>`, on purpose.** It touches no network. Run
+  after first paint, it would flash arcane before a light theme landed.
+- **A stale cache is possible.** Change `deriveTokens` and someone who deep-links the
+  résumé before reloading the site gets the old palette for one visit. `v:1` is the escape
+  hatch: bump it and stale caches are ignored rather than applied. Nothing enforces
+  remembering to; the blast radius is one visit and slightly-off greys.
+- **The two `:root` fallback blocks are now tested.** `test/tokens.test.js` asserts both
+  pages' literals equal `cssVars(arcane)`, and that every token has a fallback at all.
+  Amendment 1 rested on a comment claiming those numbers were right. They were — but
+  nothing would have caught it if a later `MUTED`/`FAINT` tweak had made them wrong.
