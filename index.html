@@ -582,6 +582,17 @@ var SiteCore=(function(){
     };
   }
 
+  /* deriveTokens' output keyed by the custom-property names the pages use.
+     The one place that mapping lives: applyTheme writes exactly this set, and
+     resume.html reads exactly this set back out of localStorage. */
+  function cssVars(t){
+    var k=deriveTokens(t);
+    return { "--bg":k.bg, "--ink":k.ink, "--accent":k.accent,
+             "--surface":k.surface, "--surface-2":k.surface2, "--line":k.line,
+             "--muted":k.muted, "--faint":k.faint,
+             "--accent-ink":k.accentInk, "--field-op":k.fieldOp };
+  }
+
   /* rejection sampling — a plain modulo would bias the low end of the range */
   function randInt(min,max){ var span=max-min+1; if(typeof crypto!=="undefined"&&crypto.getRandomValues){ var buf=new Uint32Array(1), limit=Math.floor(0x100000000/span)*span, x; do{ crypto.getRandomValues(buf); x=buf[0]; }while(x>=limit); return min+(x%span); } return min+Math.floor(Math.random()*span); }
 
@@ -607,7 +618,7 @@ var SiteCore=(function(){
   }
 
   return {hx:hx,toHex:toHex,mix:mix,lum:lum,contrast:contrast,randInt:randInt,
-          deriveTokens:deriveTokens,makeRollState:makeRollState,
+          deriveTokens:deriveTokens,cssVars:cssVars,makeRollState:makeRollState,
           THEMES:THEMES,NAT20:NAT20,NAT1:NAT1};
 })();
 </script>
@@ -622,12 +633,8 @@ var SiteCore=(function(){
 
   var curAccent="#E7B24C";
   function applyTheme(id){
-    var t=BY[id]||BY.arcane, k=SiteCore.deriveTokens(t), s=root.style; curAccent=k.accent;
-    s.setProperty("--bg",k.bg); s.setProperty("--ink",k.ink); s.setProperty("--accent",k.accent);
-    s.setProperty("--surface",k.surface); s.setProperty("--surface-2",k.surface2); s.setProperty("--line",k.line);
-    s.setProperty("--muted",k.muted); s.setProperty("--faint",k.faint);
-    s.setProperty("--accent-ink",k.accentInk);
-    s.setProperty("--field-op",k.fieldOp);
+    var t=BY[id]||BY.arcane, vars=SiteCore.cssVars(t), s=root.style; curAccent=vars["--accent"];
+    Object.keys(vars).forEach(function(k){ s.setProperty(k,vars[k]); });
     document.getElementById("theme-cur").textContent=t.label;
     Array.prototype.forEach.call(document.querySelectorAll(".theme-opt"),function(o){ o.setAttribute("aria-selected",String(o.dataset.id===id)); });
     try{ localStorage.setItem("site.theme",id); }catch(e){}
