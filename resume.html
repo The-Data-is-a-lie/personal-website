@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Daniel Grkinich — Résumé</title>
 <meta name="description" content="Résumé — Daniel Grkinich, Senior Healthcare Economic Consultant. Python automation, AI governance, healthcare economics.">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark light">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 91,28 91,72 50,95 9,72 9,28' fill='%2312162A' stroke='%23E7B24C' stroke-width='6'/%3E%3C/svg%3E">
 <style>
   /* ============================================================
@@ -13,9 +13,12 @@
      engine, no build. The values below are copied from the site's
      default "arcane" theme rather than derived, because this page
      derives nothing — see docs/adr/0001-single-file-site.md.
-     They are the exact output of SiteCore.deriveTokens(arcane), so
-     the page matches index.html for anyone who has not switched
-     themes, which is essentially every first-time visitor.
+     They are the exact output of SiteCore.cssVars(arcane) — enforced
+     by test/tokens.test.js, not just by this comment — so the page
+     matches index.html for anyone who has not switched themes, and
+     stands as the fallback for anyone who never loaded index.html at
+     all. Anyone who has picked a theme gets it applied over the top
+     by the script below.
      Measured: ink/bg 15.65:1, muted/bg 11.09:1, faint/bg 7.49:1,
      accent/bg 10.09:1, accent-ink/accent 10.17:1 — all clear AA.
      Print overrides everything below to black on white.
@@ -94,6 +97,19 @@
     .r-sec > .eyebrow{ break-after:avoid; page-break-after:avoid; }
   }
 </style>
+<script>
+/* Follow the theme picked on index.html. Deliberately not a theme engine: this
+   applies pre-computed strings and derives nothing, which is why the hardcoded
+   :root block above is still safe to duplicate. See docs/adr/0001.
+   In <head> and parser-blocking on purpose — it touches no network, and running
+   it after first paint would flash arcane before a light theme landed. */
+try{
+  var T=JSON.parse(localStorage.getItem("site.tokens")||"null");
+  if(T&&T.v===1){
+    for(var k in T) if(k!=="v") document.documentElement.style.setProperty(k,T[k]);
+  }
+}catch(e){}
+</script>
 </head>
 <body>
 

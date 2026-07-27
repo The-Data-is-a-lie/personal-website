@@ -634,7 +634,14 @@ var SiteCore=(function(){
   var curAccent="#E7B24C";
   function applyTheme(id){
     var t=BY[id]||BY.arcane, vars=SiteCore.cssVars(t), s=root.style; curAccent=vars["--accent"];
-    Object.keys(vars).forEach(function(k){ s.setProperty(k,vars[k]); });
+    /* Applied and cached in one pass, so the cache cannot describe a paint that
+       did not happen. resume.html reads it back rather than deriving anything of
+       its own, which is what keeps it a document instead of a second theme
+       engine. `v:1` is the escape hatch: bump it if deriveTokens changes, so a
+       stale cache written by an older visit is ignored. See docs/adr/0001. */
+    var cache={v:1};
+    Object.keys(vars).forEach(function(k){ s.setProperty(k,vars[k]); cache[k]=vars[k]; });
+    try{ localStorage.setItem("site.tokens",JSON.stringify(cache)); }catch(e){}
     document.getElementById("theme-cur").textContent=t.label;
     Array.prototype.forEach.call(document.querySelectorAll(".theme-opt"),function(o){ o.setAttribute("aria-selected",String(o.dataset.id===id)); });
     try{ localStorage.setItem("site.theme",id); }catch(e){}
