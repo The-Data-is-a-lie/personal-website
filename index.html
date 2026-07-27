@@ -168,29 +168,6 @@
   .arch .tip{ fill:var(--accent); opacity:.55; }
   .arch figcaption{ font-family:var(--mono); font-size:.62rem; color:var(--faint); margin-top:8px; line-height:1.45; }
 
-  /* ===== sample character reveal (static output — Flask isn't hosted) ===== */
-  .sample{ margin-top:10px; }
-  .sample-out{ overflow:hidden; max-height:0; opacity:0; transition:max-height .5s var(--ease), opacity .4s ease; }
-  .sample-out.open{ max-height:1800px; opacity:1; }
-  .sheet{ display:grid; gap:13px; padding-top:18px; transition:opacity .2s ease; }
-  .sample-out.swap .sheet{ opacity:0; }
-  .sheet-top{ display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px; }
-  .sheet-top .who{ font-family:var(--sans); font-weight:800; font-size:1.08rem; letter-spacing:-.01em; color:var(--ink); }
-  .sheet-top .sys{ font-family:var(--mono); font-size:.72rem; color:var(--accent); }
-  .sheet-top .meta{ font-family:var(--mono); font-size:.68rem; color:var(--faint); }
-  .abils{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
-  @media (max-width:480px){ .abils{ grid-template-columns:repeat(3,1fr); } }
-  .abils div{ background:var(--surface-2); border:1px solid var(--line); border-radius:3px; padding:7px 4px; text-align:center; }
-  .abils .k{ display:block; font-family:var(--mono); font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
-  .abils .v{ display:block; font-family:var(--sans); font-weight:800; font-size:1.02rem; line-height:1.2; color:var(--ink); font-variant-numeric:tabular-nums; }
-  .srow{ display:grid; grid-template-columns:96px 1fr; gap:12px; align-items:start; }
-  @media (max-width:600px){ .srow{ grid-template-columns:1fr; gap:3px; } }
-  .srow .k{ font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); padding-top:4px; }
-  .srow .v{ color:var(--muted); font-size:.88rem; min-width:0; }
-  .srow .v b{ color:var(--ink); font-weight:600; }
-  .sample-note{ font-family:var(--mono); font-size:.62rem; color:var(--faint); padding-top:13px; border-top:1px dashed var(--line); line-height:1.55; }
-  @media (prefers-reduced-motion:reduce){ .sheet{ transition:none; } .sample-out.swap .sheet{ opacity:1; } }
-
   /* ===== build notes (appendix — collapsed behind a full-width banner) ===== */
   .expander{ display:flex; align-items:center; justify-content:space-between; gap:18px; width:100%; text-align:left; cursor:pointer;
     font-family:inherit; background:var(--surface); color:var(--ink); padding:18px clamp(18px,2.4vw,24px);
@@ -202,14 +179,6 @@
   .expander small{ display:block; font-family:var(--mono); font-size:.68rem; color:var(--faint); margin-top:5px; line-height:1.45; }
   .expander .ex-chev{ flex:0 0 auto; width:20px; height:20px; color:var(--accent); transition:transform .3s var(--ease); }
   .expander[aria-expanded="true"] .ex-chev{ transform:rotate(180deg); }
-  /* .ghost = the secondary door. Two banners stacked would compete at equal weight, so this one
-     drops to the plain --line border and a muted label; the build-notes banner stays the loud one. */
-  .expander.ghost{ background:transparent; border-color:var(--line); padding:13px clamp(18px,2.4vw,24px); }
-  .expander.ghost:hover{ background:var(--surface); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
-  .expander.ghost .ex-lab{ font-size:.8rem; color:var(--muted); }
-  .expander.ghost:hover .ex-lab{ color:var(--accent); }
-  .expander.ghost .ex-chev{ width:17px; height:17px; color:var(--faint); }
-  .expander.ghost:hover .ex-chev{ color:var(--accent); }
   /* max-height is driven from JS (measured), never a hardcoded cap — this block is too tall to guess */
   .notes-wrap{ overflow:hidden; max-height:0; opacity:0; transition:max-height .55s var(--ease), opacity .4s ease; }
   .notes-wrap.open{ opacity:1; }
@@ -499,15 +468,8 @@
       <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
 
-    <div class="sample r">
-      <button class="expander ghost" id="sample-btn" type="button" aria-expanded="false" aria-controls="sample-out">
-        <span>
-          <span class="ex-lab">✦ Show a character it made</span>
-          <small>a real level-14 wizard the tool produced · 111 items · saved output, no backend needed</small>
-        </span>
-        <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="sample-out" id="sample-out" aria-hidden="true"><div class="sheet" id="sample-sheet"></div></div>
+    <div class="repos r" style="margin-top:10px">
+      <a class="repo" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener"><span>Do you want to see the process in real time? <span class="kind">↗ open the live sheet</span></span><span class="arrow">→</span></a>
     </div>
 
     <div class="notes-wrap" id="notes-body" aria-hidden="true">
@@ -750,63 +712,6 @@
     });
     if(location.hash==="#pf1e-generator") setNotes(true,true);   /* deep link arrives expanded */
     addEventListener("resize",function(){ if(nOpen&&nbody.style.maxHeight!=="none") nbody.style.maxHeight="none"; });
-  }
-
-  /* ---------- sample characters ----------
-     Real saved output from the generator, distilled by hand from the module's
-     export_to_foundryVTT.json. Static on purpose: the Flask service isn't hosted,
-     so this must never read as a live backend. Add entries to cycle more. */
-  var SAMPLES=[{
-    who:"Wizard 14",
-    sys:"core PF1e",
-    meta:"Lawful Evil · age 37 · 67 hp · tall, bald, green-eyed, spectacled",
-    abil:[["str",21],["dex",16],["con",16],["int",26],["wis",21],["cha",16]],
-    rows:[
-      ["on the sheet","<b>111</b> items — 83 spells, 20 feats, 5 pieces of equipment, a weapon and a spellbook"],
-      ["spells","83 across eight levels, 15 cantrips up to 12 at 7th — Dream Reality, Greater Contagion, Mass Suggestion, Janni's Jaunt, Leashed Shackles, Telepathy"],
-      ["feats","Persistent Spell, Improved Lightning Reflexes, Lightning Reflexes, Toughness, Great Fortitude, Diehard, Endurance, Dodge"],
-      ["traits","Undead Slayer (Pharasma), Devotee of Kalistrade (Druma), Sacred Touch, Easy Way or the Hard Way, Reactionary, Precise Treatment"],
-      ["skills","22 ranked — Survival 14, K. engineering 12, Climb 9, Escape Artist 9, Profession 9, Handle Animal 7, K. dungeoneering 7"],
-      ["gear","Longsword · Do-Maru · Cloak of Resistance +3 · Windwave Kilt · Witching Gown · Snakeskin Tunic"],
-      ["languages","Draconic, Grippli, Sphinx, Celestial, Aklo, Aquan, Gnome, Undercommon"],
-      ["house rules","Water-Touched · Spell Intuition · Selective Health"],
-      ["backstory","Adopted into a poor family; one older brother, two older sisters. Chuckles, covers his ears, pats his pockets."]
-    ]
-  }];
-
-  var sbtn=document.getElementById("sample-btn"), sout=document.getElementById("sample-out"), ssheet=document.getElementById("sample-sheet"), si=0;
-  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
-  function renderSample(i){
-    var c=SAMPLES[i], h="";
-    h+='<div class="sheet-top"><span class="who">'+esc(c.who)+'</span><span class="sys">'+esc(c.sys)+'</span><span class="meta">'+esc(c.meta)+'</span></div>';
-    h+='<div class="abils tnum">';
-    c.abil.forEach(function(a){ h+='<div><span class="k">'+a[0]+'</span><span class="v">'+a[1]+'</span></div>'; });
-    h+='</div>';
-    c.rows.forEach(function(r){ h+='<div class="srow"><span class="k">'+esc(r[0])+'</span><span class="v">'+r[1]+'</span></div>'; });
-    h+='<p class="sample-note">Saved output from the real generator, trimmed to fit — the tool itself runs inside FoundryVTT, so there\'s no live backend behind this button. Every value above came out of one generated sheet.</p>';
-    ssheet.innerHTML=h;
-  }
-  function sampleLabel(open){
-    if(!open) return "✦ Show a character it made";
-    return SAMPLES.length>1 ? "↻ Roll another" : "✦ Hide the character";
-  }
-  if(sbtn){
-    sbtn.addEventListener("click",function(){
-      var open=sout.classList.contains("open");
-      if(!open){                                  /* first click: render + expand */
-        renderSample(si);
-        sout.classList.add("open"); sout.setAttribute("aria-hidden","false"); sbtn.setAttribute("aria-expanded","true");
-      } else if(SAMPLES.length>1){                /* cycle to the next saved character */
-        si=(si+1)%SAMPLES.length;
-        if(reduce){ renderSample(si); }
-        else { sout.classList.add("swap"); setTimeout(function(){ renderSample(si); sout.classList.remove("swap"); },200); }
-        return;
-      } else {                                    /* only one sample: collapse again */
-        sout.classList.remove("open"); sout.setAttribute("aria-hidden","true"); sbtn.setAttribute("aria-expanded","false");
-      }
-      /* only the label span — writing to the button itself would wipe the chevron and sub-line */
-      sbtn.querySelector(".ex-lab").textContent=sampleLabel(sout.classList.contains("open"));
-    });
   }
 
   /* ---------- scroll reveal / glow / constellation ---------- */
