@@ -170,24 +170,24 @@
   .arch figcaption{ font-family:var(--mono); font-size:.62rem; color:var(--faint); margin-top:8px; line-height:1.45; }
 
   /* ===== build notes (appendix — collapsed behind a full-width banner) ===== */
-  .expander{ display:flex; align-items:center; justify-content:space-between; gap:18px; width:100%; text-align:left; cursor:pointer;
+  .banner{ display:flex; align-items:center; justify-content:space-between; gap:18px; width:100%; text-align:left; cursor:pointer;
     font-family:inherit; background:var(--surface); color:var(--ink); padding:18px clamp(18px,2.4vw,24px);
     border:1px solid color-mix(in srgb,var(--accent) 34%,var(--line)); border-radius:var(--radius);
     transition:border-color .25s, transform .3s var(--ease), box-shadow .35s var(--ease); }
-  .expander:hover{ border-color:var(--accent); transform:translateY(-2px);
+  .banner:hover{ border-color:var(--accent); transform:translateY(-2px);
     box-shadow:0 18px 44px -26px color-mix(in srgb,var(--accent) 55%,transparent); }
-  .expander .ex-lab{ display:block; font-family:var(--mono); font-size:.9rem; color:var(--accent); }
-  .expander small{ display:block; font-family:var(--mono); font-size:.68rem; color:var(--faint); margin-top:5px; line-height:1.45; }
-  .expander .ex-chev{ flex:0 0 auto; width:20px; height:20px; color:var(--accent); transition:transform .3s var(--ease); }
-  .expander[aria-expanded="true"] .ex-chev{ transform:rotate(180deg); }
+  .banner .banner-lab{ display:block; font-family:var(--mono); font-size:.9rem; color:var(--accent); }
+  .banner small{ display:block; font-family:var(--mono); font-size:.68rem; color:var(--faint); margin-top:5px; line-height:1.45; }
+  .banner .banner-chev{ flex:0 0 auto; width:20px; height:20px; color:var(--accent); transition:transform .3s var(--ease); }
+  .banner[aria-expanded="true"] .banner-chev{ transform:rotate(180deg); }
   /* same banner treatment on an <a>. It leaves the page rather than expanding, so it gets an
      outbound arrow instead of a chevron — same weight, different promise. */
-  .expander .ex-go{ flex:0 0 auto; width:19px; height:19px; color:var(--accent); transition:transform .3s var(--ease); }
-  .expander:hover .ex-go{ transform:translate(3px,-3px); }
+  .banner .banner-go{ flex:0 0 auto; width:19px; height:19px; color:var(--accent); transition:transform .3s var(--ease); }
+  .banner:hover .banner-go{ transform:translate(3px,-3px); }
   /* max-height is driven from JS (measured), never a hardcoded cap — this block is too tall to guess */
   .notes-wrap{ overflow:hidden; max-height:0; opacity:0; transition:max-height .55s var(--ease), opacity .4s ease; }
   .notes-wrap.open{ opacity:1; }
-  @media (prefers-reduced-motion:reduce){ .expander,.expander .ex-chev,.expander .ex-go,.notes-wrap{ transition:none; } }
+  @media (prefers-reduced-motion:reduce){ .banner,.banner .banner-chev,.banner .banner-go,.notes-wrap{ transition:none; } }
   .notes{ display:grid; gap:26px; padding-top:28px; }
   .note h3{ font-family:var(--sans); font-weight:800; letter-spacing:-.02em; font-size:1.12rem; margin:0 0 8px; }
   .note p{ margin:0 0 10px; color:var(--muted); max-width:70ch; font-size:1rem; }
@@ -468,20 +468,20 @@
       <div><span class="n">3 yrs</span><span class="l">in production</span></div>
     </div>
 
-    <button class="expander r" id="notes-btn" type="button" aria-expanded="false" aria-controls="notes-body">
+    <button class="banner r" id="notes-btn" type="button" aria-expanded="false" aria-controls="notes-body">
       <span>
-        <span class="ex-lab">✦ Read the build notes</span>
+        <span class="banner-lab">✦ Read the build notes</span>
         <small>five sections · what made it hard, the two extra rule systems, and what three years of it taught me</small>
       </span>
-      <svg class="ex-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="banner-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
 
-    <a class="expander r" style="margin-top:10px" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener">
+    <a class="banner r" style="margin-top:10px" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener">
       <span>
-        <span class="ex-lab">✦ Do you want to generate a random character?</span>
+        <span class="banner-lab">✦ Do you want to generate a random character?</span>
         <small>opens the live character sheet, which will roll one up for you · no account, nothing to install</small>
       </span>
-      <svg class="ex-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="banner-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
 
     <div class="notes-wrap" id="notes-body" aria-hidden="true">
