@@ -35,6 +35,18 @@
     --radius:5px; --ease:cubic-bezier(.22,.61,.36,1);
     --step-2:.75rem; --step-3:.8rem; --step-4:.92rem;
   }
+  /* No cached theme and a light-mode OS: start from Parchment rather than
+     arcane, matching what index.html does. Custom properties only — the
+     script below writes these inline when a theme has actually been picked,
+     and inline styles beat any stylesheet rule, so a saved theme always wins
+     over this in both directions. Print overrides both. */
+  @media (prefers-color-scheme: light){
+    :root{ /* = SiteCore.cssVars(parchment) */
+      --bg:#F3EAD7; --ink:#2B2115; --accent:#7A1F1F;
+      --muted:#4b4134; --faint:#6b6153; --line:#d1c8b6; --accent-ink:#ffffff;
+      --surface:#e9e0cd;
+    }
+  }
   *{ box-sizing:border-box; }
   html{ background:var(--bg); }
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);

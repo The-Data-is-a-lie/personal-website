@@ -36,6 +36,18 @@
     --maxw:1080px; --radius:5px; --ease:cubic-bezier(.22,.61,.36,1);
     --hero-size:clamp(3rem,10vw,7.4rem);
   }
+  /* No cached theme and a light-mode OS: start from Parchment rather than
+     arcane, which is what the prompt has always called day mode. Custom
+     properties only — the reader below writes these inline when a theme has
+     actually been picked, and inline styles beat any stylesheet rule, so a
+     saved theme always wins over this in both directions. */
+  @media (prefers-color-scheme: light){
+    :root{ /* = SiteCore.cssVars(parchment) */
+      --bg:#F3EAD7; --surface:#e9e0cd; --surface-2:#ddd4c2;
+      --ink:#2B2115; --muted:#4b4134; --faint:#6b6153; --line:#d1c8b6;
+      --accent:#7A1F1F; --accent-ink:#ffffff; --field-op:0.38;
+    }
+  }
   /* baseline reset */
   html { background: var(--bg); }
   body { margin: 0; padding: 0; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; color: var(--ink); }
@@ -65,8 +77,8 @@ try{
      Fonts are system stacks (mono reliable on Windows).
      ============================================================ */
 
-  /* :root lives in <head> — it has to be settled before first paint.
-     Everything below is ordinary styling. */
+  /* :root and the light-mode block live in <head> — they have to be settled
+     before first paint. Everything below is ordinary styling. */
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
   @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
@@ -256,6 +268,11 @@ try{
   .prompt .txt{ font-size:var(--step-4); color:var(--ink); }
   .prompt .txt small{ display:block; color:var(--faint); font-family:var(--mono); font-size:var(--step-1); margin-top:2px; }
   .prompt .pbtns{ display:flex; gap:8px; margin-left:auto; }
+  /* Both wordings ship in the markup so the copy stays in one editable place;
+     .light picks which one the visitor sees. */
+  .prompt .when-light{ display:none; }
+  .prompt.light .when-dark{ display:none; }
+  .prompt.light .when-light{ display:inline; }
   .pbtn{ font-family:var(--mono); font-size:var(--step-2); cursor:pointer; padding:8px 13px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--muted); transition:.2s; }
   .pbtn.go{ background:var(--accent); color:var(--accent-ink); border-color:transparent; }
   .pbtn:hover{ border-color:var(--accent); color:var(--accent); }
@@ -514,8 +531,8 @@ try{
 </footer>
 
 <div class="prompt" id="prompt" role="dialog" aria-label="Theme preference">
-  <div class="txt">🌙 It's set to <b>night mode</b>.<small>pick from more themes up top · two more are hidden behind the d20</small></div>
-  <div class="pbtns"><button class="pbtn" id="p-keep" type="button">Keep night</button><button class="pbtn go" id="p-day" type="button">Day mode</button></div>
+  <div class="txt"><span class="when-dark">🌙 It's set to <b>night mode</b>.</span><span class="when-light">☀️ It's set to <b>day mode</b>.</span><small>pick from more themes up top · two more are hidden behind the d20</small></div>
+  <div class="pbtns"><button class="pbtn" id="p-keep" type="button"><span class="when-dark">Keep night</span><span class="when-light">Keep day</span></button><button class="pbtn go" id="p-switch" type="button"><span class="when-dark">Day mode</span><span class="when-light">Night mode</span></button></div>
 </div>
 
 <div id="dice">
@@ -697,12 +714,19 @@ var SiteCore=(function(){
     if(on && !BY[t.id]){ THEMES.push(t); idx(); }
   });
   buildMenu();
+  /* With nothing saved, the visitor's OS setting is the only signal we have
+     about what they want, so honour it rather than assuming night. */
+  var prefersLight=matchMedia("(prefers-color-scheme: light)").matches;
+  var DEFAULT_THEME=prefersLight?"parchment":"arcane", OTHER_THEME=prefersLight?"arcane":"parchment";
   var saved=null; try{ saved=localStorage.getItem("site.theme"); }catch(e){}
-  applyTheme(saved&&BY[saved]?saved:"arcane");
+  applyTheme(saved&&BY[saved]?saved:DEFAULT_THEME);
   if(!saved){
-    var pr=document.getElementById("prompt"); setTimeout(function(){ pr.classList.add("show"); },1100);
-    document.getElementById("p-day").addEventListener("click",function(){ applyTheme("parchment"); pr.classList.remove("show"); });
-    document.getElementById("p-keep").addEventListener("click",function(){ try{localStorage.setItem("site.theme","arcane");}catch(e){} pr.classList.remove("show"); });
+    var pr=document.getElementById("prompt");
+    /* the prompt states which mode it landed on, so it has to follow suit */
+    pr.classList.toggle("light",prefersLight);
+    setTimeout(function(){ pr.classList.add("show"); },1100);
+    document.getElementById("p-switch").addEventListener("click",function(){ applyTheme(OTHER_THEME); pr.classList.remove("show"); });
+    document.getElementById("p-keep").addEventListener("click",function(){ try{localStorage.setItem("site.theme",DEFAULT_THEME);}catch(e){} pr.classList.remove("show"); });
   }
 
   /* ---------- disclosure: one collapse implementation for every panel ----------
