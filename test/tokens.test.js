@@ -8,12 +8,16 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  loadCore, allThemes, rootVars, fakeStorage, runResumeReader, HTML, RESUME,
+  loadCore, allThemes, rootVars, fakeStorage, readerCode, runReader, HTML, RESUME,
 } = require('./extract.js');
 
 const C = loadCore();
 const ARCANE = C.THEMES.find((t) => t.id === 'arcane');
+const PARCHMENT = C.THEMES.find((t) => t.id === 'parchment');
 const arcaneVars = C.cssVars(ARCANE);
+const parchmentVars = C.cssVars(PARCHMENT);
+const LIGHT = 'prefers-color-scheme: light';
+const PAGES = [['index.html', HTML], ['resume.html', RESUME]];
 
 /* the seeds are written uppercase, the mixed values come back lowercase */
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
@@ -70,48 +74,101 @@ test('the cached payload is flat strings, with room for its version key', () => 
   }
 });
 
-/* The handoff itself: what index.html writes is what resume.html applies.
-   These run the reader out of the shipped resume.html against a fake
-   localStorage, so they cover the behaviour without a browser. */
+/* ---- the light-mode fallback ----
+   With nothing cached, a light-mode OS gets Parchment from a @media block.
+   Both pages must agree, and each page's light block must cover exactly the
+   themed tokens its own base block covers. */
+
+test("each page's light-mode :root equals parchment", () => {
+  for (const [name, file] of PAGES) {
+    const light = rootVars(file, LIGHT);
+    assert.ok(Object.keys(light).length > 0, `${name} declares no tokens under ${LIGHT}`);
+
+    for (const [token, value] of Object.entries(light)) {
+      assert.ok(
+        same(value, parchmentVars[token]),
+        `${name} light :root has ${token}:${value}, parchment derives ${parchmentVars[token]}`,
+      );
+    }
+  }
+});
+
+test('the light block covers exactly the themed tokens the base block does', () => {
+  // The bug this exists for: --surface was themed in the base block but absent
+  // from the résumé's, so the back button rendered transparent for anyone with
+  // no cached theme. A token present in one and missing in the other is always
+  // a component that breaks for half the visitors.
+  for (const [name, file] of PAGES) {
+    const baseThemed = Object.keys(rootVars(file)).filter((k) => k in arcaneVars);
+    const lightThemed = Object.keys(rootVars(file, LIGHT)).filter((k) => k in arcaneVars);
+
+    assert.deepEqual(
+      lightThemed.slice().sort(),
+      baseThemed.slice().sort(),
+      `${name}: base and light :root disagree on which tokens are themed`,
+    );
+  }
+});
+
+/* ---- the handoff itself ----
+   What applyTheme caches is what the reader applies. These run the reader out
+   of each shipped page against a fake localStorage, so they cover the
+   behaviour without a browser. */
 
 /* exactly what applyTheme caches */
 function cache(theme) {
   return JSON.stringify(Object.assign({ v: 1 }, C.cssVars(theme)));
 }
 
-test('the résumé applies a theme the site cached', () => {
-  for (const theme of allThemes(C)) {
-    const applied = runResumeReader(fakeStorage({ 'site.tokens': cache(theme) }));
+test('both pages ship the identical reader', () => {
+  // Two self-contained pages, one behaviour. ADR-0001 accepts the duplication;
+  // this is what stops it drifting. Comments are stripped first — each page
+  // explains the block in its own terms, and prose is not what has to match.
+  assert.equal(
+    readerCode(HTML),
+    readerCode(RESUME),
+    'the site.tokens readers in index.html and resume.html have diverged',
+  );
+});
 
-    assert.deepEqual(applied, C.cssVars(theme), `${theme.id} did not round-trip to the résumé`);
-    assert.ok(!('v' in applied), `${theme.id}: the version key leaked into setProperty`);
+test('each page applies a theme the site cached', () => {
+  for (const [name, file] of PAGES) {
+    for (const theme of allThemes(C)) {
+      const applied = runReader(file, fakeStorage({ 'site.tokens': cache(theme) }));
+
+      assert.deepEqual(applied, C.cssVars(theme), `${theme.id} did not round-trip to ${name}`);
+      assert.ok(!('v' in applied), `${name}/${theme.id}: the version key leaked into setProperty`);
+    }
   }
 });
 
-test('the résumé falls back to its own :root when nothing is cached', () => {
-  // Someone who lands on a pasted résumé URL having never opened the site.
-  assert.deepEqual(runResumeReader(fakeStorage({})), {});
+test('each page falls back to its own :root when nothing is cached', () => {
+  // Someone who lands on a pasted résumé URL having never opened the site, or
+  // a first-time visitor to the site itself. This is the case the light-mode
+  // @media block above then decides.
+  for (const [name, file] of PAGES) {
+    assert.deepEqual(runReader(file, fakeStorage({})), {}, `${name} applied something from an empty cache`);
+  }
 });
 
-test('the résumé ignores a cache it does not understand', () => {
-  const parchment = C.THEMES.find((t) => t.id === 'parchment');
-  const vars = C.cssVars(parchment);
-
+test('each page ignores a cache it does not understand', () => {
   const junk = {
-    'a future version': JSON.stringify(Object.assign({ v: 2 }, vars)),
-    'no version at all': JSON.stringify(vars),
+    'a future version': JSON.stringify(Object.assign({ v: 2 }, parchmentVars)),
+    'no version at all': JSON.stringify(parchmentVars),
     'truncated json': '{"v":1,"--bg":"#F3',
     'not an object': '"arcane"',
     'null': 'null',
     'empty string': '',
   };
 
-  for (const [label, value] of Object.entries(junk)) {
-    assert.deepEqual(
-      runResumeReader(fakeStorage({ 'site.tokens': value })),
-      {},
-      `${label} should have been ignored, leaving the :root fallback in place`,
-    );
+  for (const [name, file] of PAGES) {
+    for (const [label, value] of Object.entries(junk)) {
+      assert.deepEqual(
+        runReader(file, fakeStorage({ 'site.tokens': value })),
+        {},
+        `${name}: ${label} should have been ignored, leaving the :root fallback in place`,
+      );
+    }
   }
 });
 
