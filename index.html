@@ -167,6 +167,8 @@ try{
   .chip.live::before{ content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-right:6px; vertical-align:1px; animation:pulse 2s infinite; }
   @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
   @media (prefers-reduced-motion:reduce){ .chip.live::before{ animation:none; } }
+  /* the live chip is also the link to the sheet, so it needs a hover affordance the inert chips don't */
+  a.chip.live:hover{ border-color:var(--accent); background:color-mix(in srgb,var(--accent) 10%,var(--surface-2)); }
   .repos{ display:flex; flex-direction:column; gap:2px; align-self:start; }
   .repo{ display:flex; align-items:center; justify-content:space-between; gap:10px; font-family:var(--mono); font-size:var(--step-3); padding:9px 12px; border-radius:3px; color:var(--ink); border:1px solid transparent; transition:background .2s, border-color .2s, color .2s; }
   .repo:hover{ background:var(--surface-2); border-color:var(--line); color:var(--accent); }
@@ -364,7 +366,7 @@ try{
           <h3>Pathfinder Character Sheet</h3>
           <div class="wh"><span class="k">Why</span><p>Playing Pathfinder shouldn't cost you anything before you roll a die. I wanted a sheet that anyone could open in a browser and send to a friend, because every other option I found wanted an account first.</p></div>
           <div class="wh"><span class="k">How</span><p>It is a character sheet built with plain HTML, CSS and JavaScript. Nothing gets installed and nothing gets sent to a server. It simply runs inside your browser and saves to your own machine, which is why it is the one project here you can open and click around in right now.</p></div>
-          <div class="stat-line"><span class="chip live">Live demo</span><span class="chip">JavaScript</span><span class="chip">Static · no backend</span></div>
+          <div class="stat-line"><a class="chip live" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener">Live demo</a><span class="chip">JavaScript</span><span class="chip">Static · no backend</span></div>
         </div>
         <div class="repos">
           <a class="repo" href="https://the-data-is-a-lie.github.io/Pathfinder-Character-Sheet/" target="_blank" rel="noopener"><span>Open the live sheet <span class="kind">↗ github.io</span></span><span class="arrow">→</span></a>
@@ -374,10 +376,10 @@ try{
 
       <article class="card flagship r">
         <div class="head">
-          <span class="eyebrow card-eyebrow">✦ the deep one · three years in production</span>
+          <span class="eyebrow card-eyebrow">✦ my main project · three years in production</span>
           <h3>PF1e Character Generator</h3>
           <div class="wh"><span class="k">Why</span><p>There was no real Pathfinder 1e character generator. A few existed, but they only did a small fraction of the work, and none of them knew the two extra rulebooks my group plays with, <b>Path of War</b> and <b>Spheres of Power/Might</b>, or the house rules we have built up over the years.</p></div>
-          <div class="wh"><span class="k">How</span><p>You answer twelve questions. A Python program then builds the entire character, choosing everything in an order that keeps it <b>legal by the rules</b>, and a small web service hands the finished sheet to FoundryVTT ready to play.</p></div>
+          <div class="wh"><span class="k">How</span><p>You answer a few questions. A Python program then builds the entire character, choosing everything in an order that keeps it <b>legal by the rules</b>, and a small web service hands the finished sheet to FoundryVTT ready to play.</p></div>
           <div class="stat-line"><span class="chip pkg">Published package</span><span class="chip">Flask</span><span class="chip">Python</span><span class="chip">Docker</span></div>
         </div>
         <div class="repos">
@@ -414,8 +416,8 @@ try{
     <div class="sec-head r"><h2>Build notes: PF1e generator</h2><span class="count">the long version</span></div>
 
     <div class="metrics lead tnum r">
-      <div><span class="n">758</span><span class="l">classes &amp; archetypes</span></div>
-      <div><span class="n">8,816</span><span class="l">feats indexed</span></div>
+      <div><span class="n">750+</span><span class="l">classes &amp; archetypes</span></div>
+      <div><span class="n">8,800+</span><span class="l">feats indexed</span></div>
       <div><span class="n">700+</span><span class="l">python functions</span></div>
       <div><span class="n">2</span><span class="l">3rd-party systems</span></div>
       <div><span class="n">3 yrs</span><span class="l">in production</span></div>
@@ -449,7 +451,7 @@ try{
           <div><span class="k">JavaScript</span>From zero. Enough to build web pages and adjust FoundryVTT on the fly.</div>
           <div><span class="k">Web scraping</span>Thousands of rules entries pulled out of a lot of different sources.</div>
           <div><span class="k">Optimization</span>The whole thing runs on free hosting, which is why it had to be quite fast and quite small. Before I tuned it, it could barely serve a handful of people at once.</div>
-          <div><span class="k">AI</span>Folding it into a real workflow rather than treating it as a toy.</div>
+          <div><span class="k">AI</span>Added an optional model for the things rules cannot decide. Backstory, the finer build choices, and homebrew abilities balanced against the real ones.</div>
           <div><span class="k">Shipping solo</span>Carrying one large project end to end, and learning whatever it needed along the way.</div>
         </div>
       </div>
@@ -470,20 +472,20 @@ try{
         <h3><span class="num">03</span>Then: two more rule systems, and our own</h3>
         <p>Handling base Pathfinder 1e was only the first half. We do not play stock. Every character at our table also uses two entire third-party rulebooks, <b>Path of War</b> and <b>Spheres of Power/Might</b>, and both of them replace big pieces of the core game rather than simply adding to it. We have our own house rules on top of that, built up over years of play.</p>
         <p>Supporting those two was more work than supporting the base game had been. Neither was written with the other in mind, so the generator constantly has to decide which book wins, and it has to hold two completely different ways of spending a character's resources on one sheet.</p>
-        <p>Each book also brought its own pile of data. The pools the generator picks from now run to 8,816 feats, 6,035 items and 758 classes and archetypes. All of it had to be readable in the same format first.</p>
+        <p>Each book also brought its own pile of data. The pools the generator picks from now run to more than 8,800 feats, 6,000 items and 750 classes and archetypes. All of it had to be readable in the same format first.</p>
       </div>
 
       <div class="note">
         <h3><span class="num">04</span>The front end I hadn't planned for</h3>
         <p>Finishing the program did not finish the project. I could produce a correct character and had nowhere to put it, and handing somebody a file full of raw data is not a tool.</p>
-        <p>So the front end became FoundryVTT, the virtual tabletop my friends and I already played in. That meant learning JavaScript from scratch, as well as learning my way around a very large application somebody else had written. It asks you twelve questions and writes the finished character straight into the game.</p>
+        <p>So the front end became FoundryVTT, the virtual tabletop my friends and I already played in. That meant learning JavaScript from scratch, as well as learning my way around a very large application somebody else had written. It asks you a few questions and writes the finished character straight into the game.</p>
 
         <figure class="arch">
           <svg viewBox="0 0 260 186" aria-hidden="true" focusable="false">
             <g>
               <rect class="box" x="0.5" y="0.5" width="259" height="34" rx="3"/>
               <text class="lbl" x="11" y="15">Foundry module</text>
-              <text class="sub" x="11" y="26">JavaScript · asks you 12 questions</text>
+              <text class="sub" x="11" y="26">JavaScript · asks you a few questions</text>
               <rect class="box" x="0.5" y="50.5" width="259" height="34" rx="3"/>
               <text class="lbl" x="11" y="65">Flask web service</text>
               <text class="sub" x="11" y="76">Docker · passes them along</text>
