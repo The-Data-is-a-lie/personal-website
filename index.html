@@ -686,6 +686,11 @@ var SiteCore=(function(){
     document.getElementById("theme-cur").textContent=t.label;
     Array.prototype.forEach.call(document.querySelectorAll(".theme-opt"),function(o){ o.setAttribute("aria-selected",String(o.dataset.id===id)); });
     try{ localStorage.setItem("site.theme",id); }catch(e){}
+    /* the animated constellation picks up the new accent on its next frame; the
+       still one drawn under reduced motion never gets one, so repaint it here.
+       paint and pts are hoisted from further down this same IIFE, so the `pts &&`
+       matters: the first applyTheme call runs before pts is assigned. */
+    if(reduce&&pts&&pts.length) paint();
   }
   var menu=document.getElementById("theme-menu");
   /* earned themes render first, in this fixed order — unlock order is 20-then-1, but so is display */
@@ -820,13 +825,19 @@ var SiteCore=(function(){
   var cv=document.getElementById("field"), ctx=cv.getContext("2d"), raf=null, pts=[], W=0,H=0, dpr=Math.min(devicePixelRatio||1,2);
   function size(){ var h=cv.parentElement; W=h.offsetWidth; H=h.offsetHeight; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
   function build(){ size(); var n=Math.min(78,Math.round(W*H/15000)); pts=[]; for(var i=0;i<n;i++){ pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18}); } }
-  function draw(){ ctx.clearRect(0,0,W,H);
-    for(var i=0;i<pts.length;i++){ var p=pts[i]; p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+  /* stepping and painting are split so reduced-motion can have the second without the
+     first: the preference asks for nothing to move, not for the background to vanish. */
+  function step(){ for(var i=0;i<pts.length;i++){ var p=pts[i]; p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1; } }
+  function paint(){ ctx.clearRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){ var p=pts[i];
       for(var j=i+1;j<pts.length;j++){ var q=pts[j],dx=p.x-q.x,dy=p.y-q.y,dd=dx*dx+dy*dy; if(dd<12500){ ctx.globalAlpha=(1-dd/12500)*.26; ctx.strokeStyle=curAccent; ctx.lineWidth=.6; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); } }
       ctx.globalAlpha=.75; ctx.fillStyle=curAccent; ctx.beginPath(); ctx.arc(p.x,p.y,1.1,0,6.283); ctx.fill(); }
-    ctx.globalAlpha=1; raf=requestAnimationFrame(draw); }
-  if(!reduce){ build(); raf=requestAnimationFrame(draw); }
-  addEventListener("resize",function(){ if(raf) build(); });
+    ctx.globalAlpha=1; }
+  function draw(){ step(); paint(); raf=requestAnimationFrame(draw); }
+  build();
+  if(reduce) paint(); else raf=requestAnimationFrame(draw);
+  /* the animated field repaints itself next frame; the still one has to be told to */
+  addEventListener("resize",function(){ build(); if(reduce) paint(); });
 
   /* ---------- d20: crypto rolls, scripted opening (20 then 1, then honest), full-screen throw ----------
      randInt and the stage machine live in SiteCore so they can be tested; this half is the DOM wiring. */
