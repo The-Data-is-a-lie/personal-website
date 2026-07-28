@@ -11,22 +11,13 @@
 <meta property="og:title" content="Daniel Grkinich">
 <meta property="og:description" content="Data &amp; automation analyst by day, builder of TTRPG tooling by night.">
 <style>
-  /* baseline reset */
-  html { background: #0A0C16; }
-  body { margin: 0; padding: 0; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; color: #ECE6D6; }
-  img { max-width: 100%; }
-</style>
-</head>
-<body>
-<style>
   /* ============================================================
-     Daniel Grkinich — personal site (default theme: "Arcane")
-     Night-default, multi-theme (tokens derived from [bg,accent,ink]
-     seeded from the Pathfinder-Character-Sheet palettes) + a d20
-     with a full-screen throw, crits, confetti, and a nat-20 unlock.
-     Fonts are system stacks (mono reliable on Windows).
+     Tokens live here in <head>, apart from the rest of the CSS, because
+     the reader script below has to overwrite them before first paint.
+     The reset resolves through them for the same reason: literal colours
+     here would paint dark for the whole of the head-to-body window even
+     when the visitor has a light theme saved.
      ============================================================ */
-
   :root {
     --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
     --serif:"Palatino Linotype","Book Antiqua","Iowan Old Style",Georgia,serif;
@@ -45,6 +36,37 @@
     --maxw:1080px; --radius:5px; --ease:cubic-bezier(.22,.61,.36,1);
     --hero-size:clamp(3rem,10vw,7.4rem);
   }
+  /* baseline reset */
+  html { background: var(--bg); }
+  body { margin: 0; padding: 0; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; color: var(--ink); }
+  img { max-width: 100%; }
+</style>
+<script>
+/* Apply the picked theme before first paint. Identical to the block in
+   resume.html — test/tokens.test.js pins the two byte-for-byte.
+   In <head> and parser-blocking on purpose: it touches no network, and the
+   tokens above are the only thing standing between a saved light theme and
+   a dark flash on every single load. */
+try{
+  var T=JSON.parse(localStorage.getItem("site.tokens")||"null");
+  if(T&&T.v===1){
+    for(var k in T) if(k!=="v") document.documentElement.style.setProperty(k,T[k]);
+  }
+}catch(e){}
+</script>
+</head>
+<body>
+<style>
+  /* ============================================================
+     Daniel Grkinich — personal site (default theme: "Arcane")
+     Night-default, multi-theme (tokens derived from [bg,accent,ink]
+     seeded from the Pathfinder-Character-Sheet palettes) + a d20
+     with a full-screen throw, crits, confetti, and a nat-20 unlock.
+     Fonts are system stacks (mono reliable on Windows).
+     ============================================================ */
+
+  /* :root lives in <head> — it has to be settled before first paint.
+     Everything below is ordinary styling. */
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
   @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
